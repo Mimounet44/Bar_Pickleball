@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar du Pickleball de Mauves</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 15px;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        .top-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .save-status {
+            background: #27ae60;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .save-status.saving {
+            background: #f39c12;
+        }
+
+        .save-status.error {
+            background: #e74c3c;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 16px;
+            background: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .tab.active {
+            background: #2ecc71;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-small {
+            padding: 10px 14px;
+            width: auto;
+        }
+
+        .btn-success { background: #27ae60; }
+        .btn-danger { background: #e74c3c; }
+        .btn-print { background: #3498db; }
+        .btn-warning { background: #f39c12; }
+        .btn-info { background: #17a2b8; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th, td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sort-indicator {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .edit-btn {
+            color: #f39c12;
+        }
+
+        .delete-btn {
+            color: #e74c3c;
+        }
+
+        .cancel-btn {
+            color: #95a5a6;
+        }
+
+        .mobile-table {
+            overflow-x: auto;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .summary-card {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #f39c12;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .edit-date {
+            width: 100%;
+            padding: 6px;
+            border: 2px solid #f39c12;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .stock-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .stock-low {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+
+        .stock-out {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; }
+            .container { box-shadow: none !important; }
+        }
+        /* READONLY / SAISIE */
+        .readonly-mode button:not(#adminLoginBtn):not(#logoutBtn) { opacity:0.5; pointer-events:none; }
+        .readonly-mode input, .readonly-mode select { opacity:0.5; pointer-events:none; }
+        #loginPanel, #loginPanel * { pointer-events:auto !important; opacity:1 !important; }
+        #adminLoginBtn, #logoutBtn { pointer-events:auto !important; opacity:1 !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍺 Bar du Pickleball de Mauves</h1>
+
+        <div class="top-bar no-print">
+            <button class="btn-small btn-success" onclick="sauvegarderDonnees()"><i class="fas fa-save"></i> Sauvegarder</button>
+            <button class="btn-small btn-print" onclick="imprimerDonnees()"><i class="fas fa-print"></i> Imprimer</button>
+            <button class="btn-small btn-info" onclick="exporterDonnees()"><i class="fas fa-file-export"></i> Exporter</button>
+            <button class="btn-small btn-warning" onclick="document.getElementById('importFile').click()"><i class="fas fa-file-import"></i> Importer</button>
+            <button class="btn-small btn-danger" onclick="demanderReset()"><i class="fas fa-redo"></i> Réinitialiser</button>
+            <span id="saveStatus" class="save-status">✓ Sauvegardé</span>
+            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importerDonnees(event)">
+            <span id="userEmail"></span>
+            <button id="adminLoginBtn" onclick="toggleLoginPanel()" style="background:transparent;border:1px solid #dee2e6;color:#888;font-size:12px;padding:6px 12px;border-radius:15px;cursor:pointer;">🔑 Connexion</button>
+            <div id="loginPanel" style="display:none;position:fixed;top:70px;right:12px;z-index:9999;background:#fff;border:1px solid #dee2e6;border-radius:12px;padding:18px;width:270px;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
+                <div style="font-weight:700;margin-bottom:12px;font-size:15px;">🔑 Connexion</div>
+                <button onclick="loginWithGoogle()" style="width:100%;padding:9px;margin-bottom:10px;border-radius:8px;border:1px solid #dee2e6;background:#f8f9fa;color:#333;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <img src="https://www.google.com/favicon.ico" style="width:14px;"> Connexion Google
+                </button>
+                <div style="text-align:center;color:#888;font-size:12px;margin-bottom:10px;">— ou email / mot de passe —</div>
+                <input id="loginEmail" type="email" placeholder="Email" style="width:100%;padding:8px;border-radius:8px;border:1px solid #dee2e6;font-size:13px;margin-bottom:8px;box-sizing:border-box;">
+                <input id="loginPassword" type="password" placeholder="Mot de passe" style="width:100%;padding:8px;border-radius:8px;border:1px solid #dee2e6;font-size:13px;margin-bottom:10px;box-sizing:border-box;">
+                <button onclick="loginWithEmail()" style="width:100%;padding:9px;border-radius:8px;border:none;background:#667eea;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">Se connecter</button>
+                <div id="loginPanelMsg" style="margin-top:8px;font-size:12px;color:#e74c3c;text-align:center;min-height:16px;"></div>
+            </div>
+            <button id="logoutBtn" onclick="doLogout()" style="display:none;background:transparent;border:1px solid #dee2e6;color:#888;font-size:12px;padding:6px 12px;border-radius:15px;cursor:pointer;">🚪 Déconnexion</button>
+        </div>
+
+        <div class="tabs no-print">
+            <button class="tab" onclick="changerSection('ventes')">Ventes</button>
+            <button class="tab" onclick="changerSection('offertes')">Offertes</button>
+            <button class="tab" onclick="changerSection('stock')">Stock</button>
+            <button class="tab" onclick="changerSection('achats')">Achats</button>
+            <button class="tab" onclick="changerSection('boissons')">Produits</button>
+            <button class="tab" onclick="changerSection('bilan')">Bilan</button>
+            <button class="tab" onclick="changerSection('apports')">Apports</button>
+            <button class="tab" onclick="changerSection('remboursements')">Remboursements</button>
+            <button class="tab" onclick="changerSection('utilisateurs')" id="usersTabBtn" style="display:none;">👥 Utilisateurs</button>
+        </div>
+
+        <!-- Section Ventes -->
+        <div id="ventes" class="section active">
+            <h2>Enregistrer une vente</h2>
+            <div class="form-group">
+                <label>Produit</label>
+                <select id="venteBoisson"></select>
+            </div>
+            <div class="form-group">
+                <label>Quantité vendue</label>
+                <input type="number" id="venteQuantite" placeholder="Ex: 5" min="1">
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="venteDate">
+            </div>
+            <button class="no-print" onclick="ajouterVente()"><i class="fas fa-plus"></i> Enregistrer la vente</button>
+
+            <h3>Historique des ventes</h3>
+            <div class="mobile-table">
+                <table id="tableVentes">
+                    <thead>
+                        <tr>
+                            <th onclick="trierVentes()">Date <span class="sort-indicator">▼</span></th>
+                            <th>Produit</th>
+                            <th>Qté</th>
+                            <th>Prix Unitaire</th>
+                            <th>Total</th>
+                            <th class="no-print">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyVentes"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Consommations offertes -->
+        <div id="offertes" class="section">
+            <h2>🎁 Consommations offertes</h2>
+            <div class="form-group">
+                <label>Produit offert</label>
+                <select id="offertBoisson"></select>
+            </div>
+            <div class="form-group">
+                <label>Quantité offerte</label>
+                <input type="number" id="offertQuantite" placeholder="Ex: 5" min="1">
+            </div>
+            <div class="form-group">
+                <label>Motif</label>
+                <input type="text" id="offertMotif" placeholder="Ex: Tournoi, Remerciement, Promotion">
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="offertDate">
+            </div>
+            <button class="no-print btn-success" onclick="ajouterOffert()"><i class="fas fa-gift"></i> Enregistrer l'offre</button>
+
+            <h3>Historique des consommations offertes</h3>
+            <div class="mobile-table">
+                <table id="tableOfferts">
+                    <thead>
+                        <tr>
+                            <th onclick="trierOfferts()">Date <span class="sort-indicator">▼</span></th>
+                            <th>Produit</th>
+                            <th>Qté</th>
+                            <th>Valeur (vente)</th>
+                            <th>Coût (achat)</th>
+                            <th>Motif</th>
+                            <th class="no-print">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyOfferts"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Stock -->
+        <div id="stock" class="section">
+            <h2>📦 État du Stock</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h3>Total Produits</h3>
+                    <p id="totalBoissonsStock">0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>En Stock</h3>
+                    <p id="totalEnStock">0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Rupture</h3>
+                    <p id="totalRupture">0</p>
+                </div>
+            </div>
+
+            <h3>Détail par produit</h3>
+            <div id="listeStock"></div>
+        </div>
+
+        <!-- Section Achats -->
+        <div id="achats" class="section">
+            <h2>Enregistrer un achat</h2>
+            <div class="form-group">
+                <label>Produit</label>
+                <select id="achatBoisson"></select>
+            </div>
+            <div class="form-group">
+                <label>Quantité</label>
+                <input type="number" id="achatQuantite" placeholder="Ex: 24" min="1">
+            </div>
+            <div class="form-group">
+                <label>Prix d'achat unitaire (€)</label>
+                <input type="number" id="achatPrix" placeholder="Ex: 1.50" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="achatDate">
+            </div>
+            <button class="no-print" onclick="ajouterAchat()"><i class="fas fa-plus"></i> Enregistrer l'achat</button>
+
+            <h3>Historique des achats</h3>
+            <div class="mobile-table">
+                <table id="tableAchats">
+                    <thead>
+                        <tr>
+                            <th onclick="trierAchats()">Date <span class="sort-indicator">▼</span></th>
+                            <th>Produit</th>
+                            <th>Qté</th>
+                            <th>Prix Unitaire</th>
+                            <th>Total</th>
+                            <th class="no-print">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyAchats"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Produits -->
+        <div id="boissons" class="section">
+            <h2>📦 Gérer les produits</h2>
+            <div class="form-group">
+                <label>Nom du produit</label>
+                <input type="text" id="boissonNom" placeholder="Ex: Bière blonde, Galette saucisse, Bonbons">
+            </div>
+            <div class="form-group">
+                <label>Type de produit</label>
+                <select id="boissonType">
+                    <option value="boisson">Boisson</option>
+                    <option value="nourriture">Nourriture</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Prix de vente (€)</label>
+                <input type="number" id="boissonPrix" placeholder="Ex: 3.50" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Unité de vente</label>
+                <select id="boissonUnite">
+                    <option value="unite">Unité</option>
+                    <option value="pack">Pack</option>
+                    <option value="kg">Kilogramme</option>
+                    <option value="portion">Portion</option>
+                </select>
+            </div>
+            <button class="no-print" onclick="ajouterBoisson()"><i class="fas fa-plus"></i> Ajouter le produit</button>
+
+            <h3>Liste des produits</h3>
+            <div class="mobile-table">
+                <table id="tableBoissons">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Type</th>
+                            <th>Prix</th>
+                            <th>Unité</th>
+                            <th class="no-print">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyBoissons"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Bilan -->
+        <div id="bilan" class="section">
+            <h2>Bilan financier</h2>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h3>Total Apports</h3>
+                    <p id="totalApportsBilan">0.00 €</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Dépenses</h3>
+                    <p id="totalDepensesBilan">0.00 €</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Recettes</h3>
+                    <p id="totalRecettesBilan">0.00 €</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Remboursements</h3>
+                    <p id="totalRemboursementsBilan">0.00 €</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Valeur Offres</h3>
+                    <p id="totalOffertsValeurBilan">0.00 €</p>
+                    <small style="font-size: 10px;">au prix de vente</small>
+                </div>
+                <div class="summary-card">
+                    <h3>Coût des Ventes</h3>
+                    <p id="coutVentesBilan">0.00 €</p>
+                    <small style="font-size: 10px;">coût d'achat des produits vendus</small>
+                </div>
+                <div class="summary-card">
+                    <h3>Coût des Offres</h3>
+                    <p id="coutOffertsBilan">0.00 €</p>
+                    <small style="font-size: 10px;">coût d'achat des produits offerts</small>
+                </div>
+                <div class="summary-card">
+                    <h3>Bénéfice Net</h3>
+                    <p id="beneficeBilan">0.00 €</p>
+                    <small style="font-size: 10px;">Recettes - (Coût des ventes + Coût des offres)</small>
+                </div>
+                <div class="summary-card">
+                    <h3>Solde Disponible</h3>
+                    <p id="soldeDisponibleBilan">0.00 €</p>
+                    <small style="font-size: 10px;">Apports + Recettes - Dépenses - Remboursements</small>
+                </div>
+                <div class="summary-card">
+                    <h3>Vérification</h3>
+                    <p id="verificationBilan">✓ OK</p>
+                    <small style="font-size: 10px;">Solde doit = Apports + (Recettes - Dépenses) - Remboursements</small>
+                </div>
+            </div>
+
+            <h3>Détails par contributeur</h3>
+            <div class="mobile-table">
+                <table id="tableContributeurs">
+                    <thead>
+                        <tr>
+                            <th>Contributeur</th>
+                            <th>Total Apporté</th>
+                            <th>Total Remboursé</th>
+                            <th>Reste à Rembourser</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyContributeurs"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Apports -->
+        <div id="apports" class="section">
+            <h2>Enregistrer un apport</h2>
+            <div class="form-group">
+                <label>Nom du contributeur</label>
+                <input type="text" id="apportNom" placeholder="Ex: Jean Dupont">
+            </div>
+            <div class="form-group">
+                <label>Montant (€)</label>
+                <input type="number" id="apportMontant" placeholder="Ex: 100" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="apportDate">
+            </div>
+            <button class="no-print" onclick="ajouterApport()"><i class="fas fa-plus"></i> Ajouter l'apport</button>
+
+            <h3>Historique des apports</h3>
+            <div class="mobile-table">
+                <table id="tableApports">
+                    <thead>
+                        <tr>
+                            <th onclick="trierApports()">Date <span class="sort-indicator">▼</span></th>
+                            <th>Nom</th>
+                            <th>Montant</th>
+                            <th class="no-print">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyApports"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Remboursements -->
+        <div id="remboursements" class="section">
+            <h2>Rembourser un apport</h2>
+            <div class="form-group">
+                <label>Contributeur</label>
+                <select id="remboursementContributeur"></select>
+            </div>
+            <div class="form-group">
+                <label>Montant à rembourser (€)</label>
+                <input type="number" id="remboursementMontant" placeholder="Ex: 50" step="0.01">
+            </div>
+            <button class="btn-success no-print" onclick="ajouterRemboursement()"><i class="fas fa-money-bill-wave"></i> Rembourser</button>
+
+            <h3>Historique des remboursements</h3>
+            <div class="mobile-table">
+                <table id="tableRemboursements">
+                    <thead>
+                        <tr>
+                            <th onclick="trierRemboursements()">Date <span class="sort-indicator">▼</span></th>
+                            <th>Nom</th>
+                            <th>Montant</th>
+                            <th class="no-print">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyRemboursements"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Utilisateurs (admin only) -->
+    <div id="utilisateurs" class="section no-print" id="usersSection" style="display:none;">
+        <h2>👥 Gestion des accès</h2>
+        <p style="color:#888;margin-bottom:16px;font-size:14px;">Ajoutez des utilisateurs autorisés à saisir des données. Ils n'ont pas accès à Firebase ni à la configuration.</p>
+        <div style="background:#f8f9fa;border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid #dee2e6;">
+            <h3 style="margin-bottom:12px;">➕ Ajouter un utilisateur</h3>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+                <div class="form-group" style="flex:1;min-width:150px;margin:0;">
+                    <label>Email</label>
+                    <input id="newUserEmail" type="email" placeholder="prenom@email.com">
+                </div>
+                <div class="form-group" style="flex:1;min-width:130px;margin:0;">
+                    <label>Mot de passe</label>
+                    <input id="newUserPassword" type="password" placeholder="Min. 6 caractères">
+                </div>
+                <div class="form-group" style="flex:1;min-width:120px;margin:0;">
+                    <label>Nom (optionnel)</label>
+                    <input id="newUserName" type="text" placeholder="Jean Dupont">
+                </div>
+                <button onclick="addUser()" class="btn-success" style="white-space:nowrap;">✅ Ajouter</button>
+            </div>
+            <div id="addUserMsg" style="margin-top:8px;font-size:13px;text-align:center;min-height:16px;"></div>
+        </div>
+        <h3 style="margin-bottom:12px;">📋 Utilisateurs autorisés</h3>
+        <div id="usersList"><p style="color:#888;text-align:center;padding:20px;">Chargement...</p></div>
+    </div>
+
+    <!-- Modal pour Reset -->
+    <div id="resetModal" class="modal no-print">
+        <div class="modal-content">
+            <h3>Confirmation</h3>
+            <p>Êtes-vous sûr de vouloir réinitialiser toutes les données ?</p>
+            <div class="modal-buttons">
+                <button class="btn-danger" onclick="reinitialiserDonnees()"><i class="fas fa-check"></i> Oui, Réinitialiser</button>
+                <button class="btn-warning" onclick="fermerModal()"><i class="fas fa-times"></i> Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // ===== FIREBASE =====
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuOP-EwHzOo1p-WeNu0gQbWyv97kA6T5M",
+            authDomain: "pickleball-clean.firebaseapp.com",
+            databaseURL: "https://pickleball-clean-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "pickleball-clean",
+            storageBucket: "pickleball-clean.firebasestorage.app",
+            messagingSenderId: "1095429902544",
+            appId: "1:1095429902544:web:dc4aa9070a0d654f480ed5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        let isAdmin = false;
+        let isSaisie = false;
+        let currentUser = null;
+        let secondaryApp = null;
+        let unsubscribeSnapshot = null;
+
+        // ===== VARIABLES GLOBALES =====
+        let data = {
+            apports: [],
+            boissons: [],
+            achats: [],
+            ventes: [],
+            remboursements: [],
+            offerts: []
+        };
+
+        // Variables pour la sauvegarde automatique
+        let saveTimeout;
+        let isSaving = false;
+
+        // États de tri par défaut
+        let triApports = 'desc';
+        let triAchats = 'desc';
+        let triVentes = 'desc';
+        let triRemboursements = 'desc';
+        let triOfferts = 'desc';
+
+        // ===== SYSTÈME DE SAUVEGARDE =====
+        function mettreAJourStatutSauvegarde(statut) {
+            const statusElement = document.getElementById('saveStatus');
+            if (statusElement) {
+                statusElement.textContent = statut.message;
+                statusElement.className = `save-status ${statut.classe}`;
+            }
+        }
+
+        function debounceSauvegarde() {
+            clearTimeout(saveTimeout);
+            mettreAJourStatutSauvegarde({ message: '⏳ Sauvegarde...', classe: 'saving' });
+
+            saveTimeout = setTimeout(() => {
+                sauvegarderDonnees();
+            }, 1000);
+        }
+
+        async function sauvegarderDonnees() {
+            if (isSaving) return;
+            if (!db || (!isAdmin && !isSaisie)) return;
+            isSaving = true;
+            try {
+                trierDonneesParDate();
+                await setDoc(doc(db, "buvette", "data"), data);
+                console.log('✅ Données sauvegardées');
+                mettreAJourStatutSauvegarde({ message: '✓ Sauvegardé', classe: '' });
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde:', error);
+                mettreAJourStatutSauvegarde({ message: '❌ Erreur sauvegarde', classe: 'error' });
+                setTimeout(() => mettreAJourStatutSauvegarde({ message: '✓ Sauvegardé', classe: '' }), 3000);
+            } finally {
+                isSaving = false;
+            }
+        }
+
+        async function startRealtimeSync() {
+            if (!db) return;
+            if (unsubscribeSnapshot) { unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+            try {
+                unsubscribeSnapshot = onSnapshot(doc(db, "buvette", "data"), (snap) => {
+                    if (snap.exists()) {
+                        const d = snap.data();
+                        data = { ...data, ...d };
+                        afficherToutesLesDonnees();
+                        mettreAJourSelects();
+                        mettreAJourStatutSauvegarde({ message: '✓ Synchronisé', classe: '' });
+                    }
+                }, (e) => console.error("Erreur sync:", e));
+            } catch(e) { console.error("Erreur sync:", e); }
+        }
+
+        function chargerDonnees() {
+            // Remplacé par startRealtimeSync — gardé pour compatibilité
+        }
+
+        function exporterDonnees() {
+            try {
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `bar_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                URL.revokeObjectURL(url);
+                alert('📤 Données exportées!');
+            } catch (error) {
+                console.error('Erreur export:', error);
+                alert('❌ Erreur exportation');
+            }
+        }
+
+        function importerDonnees(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const donneesImportees = JSON.parse(e.target.result);
+                    data = { ...data, ...donneesImportees };
+                    sauvegarderDonnees();
+                    afficherToutesLesDonnees();
+                    mettreAJourSelects();
+                    alert('📥 Données importées avec succès!');
+
+                    event.target.value = '';
+                } catch (error) {
+                    console.error('Erreur import:', error);
+                    alert('❌ Erreur importation: fichier invalide');
+                }
+            };
+            reader.onerror = function() {
+                alert('❌ Erreur lecture fichier');
+            };
+            reader.readAsText(file);
+        }
+
+        // ===== FONCTIONS MODALES =====
+        function demanderReset() {
+            document.getElementById('resetModal').style.display = 'flex';
+        }
+
+        function fermerModal() {
+            document.getElementById('resetModal').style.display = 'none';
+        }
+
+        function imprimerDonnees() {
+            window.print();
+        }
+
+        // ===== FONCTIONS DE BASE =====
+        function getDateDuJour() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        // ===== FONCTIONS DE TRI AUTOMATIQUE =====
+        function trierDonneesParDate() {
+            data.apports.sort((a, b) => new Date(b.date) - new Date(a.date));
+            data.achats.sort((a, b) => new Date(b.date) - new Date(a.date));
+            data.ventes.sort((a, b) => new Date(b.date) - new Date(a.date));
+            data.remboursements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            data.offerts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        function mettreAJourIndicateursTri() {
+            document.querySelectorAll('#tableApports th .sort-indicator').forEach(indicator => {
+                indicator.textContent = triApports === 'desc' ? '▼' : '▲';
+            });
+            document.querySelectorAll('#tableAchats th .sort-indicator').forEach(indicator => {
+                indicator.textContent = triAchats === 'desc' ? '▼' : '▲';
+            });
+            document.querySelectorAll('#tableVentes th .sort-indicator').forEach(indicator => {
+                indicator.textContent = triVentes === 'desc' ? '▼' : '▲';
+            });
+            document.querySelectorAll('#tableRemboursements th .sort-indicator').forEach(indicator => {
+                indicator.textContent = triRemboursements === 'desc' ? '▼' : '▲';
+            });
+            document.querySelectorAll('#tableOfferts th .sort-indicator').forEach(indicator => {
+                indicator.textContent = triOfferts === 'desc' ? '▼' : '▲';
+            });
+        }
+
+        // ===== GESTION DES DONNÉES =====
+        function reinitialiserDonnees() {
+            data = { apports: [], boissons: [], achats: [], ventes: [], remboursements: [], offerts: [] };
+            afficherToutesLesDonnees();
+            mettreAJourSelects();
+            fermerModal();
+            sauvegarderDonnees();
+            alert('🔄 Données réinitialisées !');
+        }
+
+        // ===== FONCTION UTILITAIRE : COÛT MOYEN D'ACHAT =====
+        function getCoutAchatMoyen(boissonId) {
+            const achatsPourProduit = data.achats.filter(a => a.boissonId === boissonId);
+            if (achatsPourProduit.length === 0) return 0;
+
+            const quantiteTotaleAchetee = achatsPourProduit.reduce((sum, a) => sum + a.quantite, 0);
+            const coutTotalAchat = achatsPourProduit.reduce((sum, a) => sum + a.total, 0);
+
+            if (quantiteTotaleAchetee > 0) {
+                return coutTotalAchat / quantiteTotaleAchetee;
+            }
+            return 0;
+        }
+
+        // ===== GESTION DES PRODUITS =====
+        function ajouterBoisson() {
+            const nom = document.getElementById('boissonNom').value.trim();
+            const type = document.getElementById('boissonType').value;
+            const prix = parseFloat(document.getElementById('boissonPrix').value);
+            const unite = document.getElementById('boissonUnite').value;
+
+            if (!nom || !prix || prix <= 0) {
+                alert('❌ Veuillez remplir tous les champs');
+                return;
+            }
+
+            data.boissons.push({
+                id: Date.now(),
+                nom,
+                type,
+                prix,
+                unite,
+                dateAjout: new Date().toISOString()
+            });
+
+            document.getElementById('boissonNom').value = '';
+            document.getElementById('boissonPrix').value = '';
+
+            afficherBoissons();
+            mettreAJourSelects();
+            debounceSauvegarde();
+        }
+
+        function afficherBoissons() {
+            const tbody = document.getElementById('tbodyBoissons');
+            tbody.innerHTML = '';
+
+            data.boissons.forEach(boisson => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <span id="boisson-nom-${boisson.id}">${boisson.nom}</span>
+                        <input type="text" id="edit-boisson-nom-${boisson.id}" class="edit-input" value="${boisson.nom}"
+                               style="display:none" onchange="sauvegarderModificationBoisson(${boisson.id})">
+                    </td>
+                    <td>
+                        <span id="boisson-type-${boisson.id}">${boisson.type}</span>
+                        <select id="edit-boisson-type-${boisson.id}" class="edit-input" style="display:none" onchange="sauvegarderModificationBoisson(${boisson.id})">
+                            <option value="boisson" ${boisson.type === 'boisson' ? 'selected' : ''}>Boisson</option>
+                            <option value="nourriture" ${boisson.type === 'nourriture' ? 'selected' : ''}>Nourriture</option>
+                            <option value="autre" ${boisson.type === 'autre' ? 'selected' : ''}>Autre</option>
+                        </select>
+                    </td>
+                    <td>
+                        <span id="boisson-prix-${boisson.id}">${boisson.prix.toFixed(2)} €</span>
+                        <input type="number" id="edit-boisson-prix-${boisson.id}" class="edit-input" value="${boisson.prix}" step="0.01"
+                               style="display:none" onchange="sauvegarderModificationBoisson(${boisson.id})">
+                    </td>
+                    <td>
+                        <span id="boisson-unite-${boisson.id}">${boisson.unite}</span>
+                        <select id="edit-boisson-unite-${boisson.id}" class="edit-input" style="display:none" onchange="sauvegarderModificationBoisson(${boisson.id})">
+                            <option value="unite" ${boisson.unite === 'unite' ? 'selected' : ''}>Unité</option>
+                            <option value="pack" ${boisson.unite === 'pack' ? 'selected' : ''}>Pack</option>
+                            <option value="kg" ${boisson.unite === 'kg' ? 'selected' : ''}>Kilogramme</option>
+                            <option value="portion" ${boisson.unite === 'portion' ? 'selected' : ''}>Portion</option>
+                        </select>
+                    </td>
+                    <td class="no-print">
+                        <div class="action-icons">
+                            <button class="icon-btn edit-btn" onclick="activerEditionBoisson(${boisson.id})"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn delete-btn" onclick="supprimerBoisson(${boisson.id})"><i class="fas fa-trash"></i></button>
+                            <button class="icon-btn cancel-btn" onclick="annulerEditionBoisson(${boisson.id})" style="display:none;"><i class="fas fa-times"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function activerEditionBoisson(id) {
+            document.getElementById(`boisson-nom-${id}`).style.display = 'none';
+            document.getElementById(`boisson-type-${id}`).style.display = 'none';
+            document.getElementById(`boisson-prix-${id}`).style.display = 'none';
+            document.getElementById(`boisson-unite-${id}`).style.display = 'none';
+
+            document.getElementById(`edit-boisson-nom-${id}`).style.display = 'block';
+            document.getElementById(`edit-boisson-type-${id}`).style.display = 'block';
+            document.getElementById(`edit-boisson-prix-${id}`).style.display = 'block';
+            document.getElementById(`edit-boisson-unite-${id}`).style.display = 'block';
+
+            document.querySelector(`button[onclick="annulerEditionBoisson(${id})"]`).style.display = 'inline-block';
+            document.getElementById(`edit-boisson-nom-${id}`).focus();
+        }
+
+        function annulerEditionBoisson(id) {
+            document.getElementById(`boisson-nom-${id}`).style.display = 'block';
+            document.getElementById(`boisson-type-${id}`).style.display = 'block';
+            document.getElementById(`boisson-prix-${id}`).style.display = 'block';
+            document.getElementById(`boisson-unite-${id}`).style.display = 'block';
+
+            document.getElementById(`edit-boisson-nom-${id}`).style.display = 'none';
+            document.getElementById(`edit-boisson-type-${id}`).style.display = 'none';
+            document.getElementById(`edit-boisson-prix-${id}`).style.display = 'none';
+            document.getElementById(`edit-boisson-unite-${id}`).style.display = 'none';
+
+            document.querySelector(`button[onclick="annulerEditionBoisson(${id})"]`).style.display = 'none';
+        }
+
+        function sauvegarderModificationBoisson(id) {
+            const nom = document.getElementById(`edit-boisson-nom-${id}`).value;
+            const type = document.getElementById(`edit-boisson-type-${id}`).value;
+            const prix = parseFloat(document.getElementById(`edit-boisson-prix-${id}`).value);
+            const unite = document.getElementById(`edit-boisson-unite-${id}`).value;
+
+            if (!nom || !prix || prix <= 0) {
+                alert('❌ Veuillez corriger les erreurs');
+                return;
+            }
+
+            const boisson = data.boissons.find(b => b.id === id);
+            if (boisson) {
+                boisson.nom = nom;
+                boisson.type = type;
+                boisson.prix = prix;
+                boisson.unite = unite;
+            }
+
+            afficherBoissons();
+            mettreAJourSelects();
+            debounceSauvegarde();
+        }
+
+        function supprimerBoisson(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
+
+            data.boissons = data.boissons.filter(boisson => boisson.id !== id);
+            data.achats = data.achats.filter(achat => achat.boissonId !== id);
+            data.ventes = data.ventes.filter(vente => vente.boissonId !== id);
+            data.offerts = data.offerts.filter(offert => offert.boissonId !== id);
+            afficherBoissons();
+            afficherAchats();
+            afficherVentes();
+            afficherOfferts();
+            afficherStock();
+            mettreAJourSelects();
+            debounceSauvegarde();
+            alert('🗑️ Produit supprimé !');
+        }
+
+        // ===== CALCUL DU STOCK =====
+        function calculerStock() {
+            const stock = {};
+
+            data.boissons.forEach(boisson => {
+                stock[boisson.id] = {
+                    nom: boisson.nom,
+                    type: boisson.type,
+                    unite: boisson.unite,
+                    prix: boisson.prix,
+                    achatTotal: 0,
+                    venteTotal: 0,
+                    offertTotal: 0,
+                    stockRestant: 0
+                };
+            });
+
+            data.achats.forEach(achat => {
+                if (stock[achat.boissonId]) {
+                    stock[achat.boissonId].achatTotal += achat.quantite;
+                }
+            });
+
+            data.ventes.forEach(vente => {
+                if (stock[vente.boissonId]) {
+                    stock[vente.boissonId].venteTotal += vente.quantite;
+                }
+            });
+
+            data.offerts.forEach(offert => {
+                if (stock[offert.boissonId]) {
+                    stock[offert.boissonId].offertTotal += offert.quantite;
+                }
+            });
+
+            Object.keys(stock).forEach(boissonId => {
+                stock[boissonId].stockRestant = stock[boissonId].achatTotal -
+                                               stock[boissonId].venteTotal -
+                                               stock[boissonId].offertTotal;
+            });
+
+            return stock;
+        }
+
+        function afficherStock() {
+            const stock = calculerStock();
+            const container = document.getElementById('listeStock');
+            container.innerHTML = '';
+
+            let totalBoissons = 0;
+            let totalEnStock = 0;
+            let totalRupture = 0;
+
+            Object.keys(stock).forEach(boissonId => {
+                const item = stock[boissonId];
+                totalBoissons++;
+
+                if (item.stockRestant > 0) {
+                    totalEnStock++;
+                } else {
+                    totalRupture++;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'stock-card';
+
+                if (item.stockRestant <= 0) {
+                    card.classList.add('stock-out');
+                } else if (item.stockRestant <= 10) {
+                    card.classList.add('stock-low');
+                }
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0;">${item.nom}</h4>
+                            <p style="margin: 0; color: #666;">
+                                Prix: ${item.prix.toFixed(2)} € / ${item.unite}
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="margin: 0; font-size: 18px; font-weight: bold; color: ${item.stockRestant <= 0 ? '#e74c3c' : item.stockRestant <= 10 ? '#f39c12' : '#27ae60'}">
+                                ${item.stockRestant} ${item.unite}
+                            </p>
+                            <p style="margin: 0; font-size: 12px; color: #666;">
+                                Acheté: ${item.achatTotal} | Vendu: ${item.venteTotal} | Offert: ${item.offertTotal}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            document.getElementById('totalBoissonsStock').textContent = totalBoissons;
+            document.getElementById('totalEnStock').textContent = totalEnStock;
+            document.getElementById('totalRupture').textContent = totalRupture;
+        }
+
+        // ===== GESTION DE L'INTERFACE =====
+        function changerSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(sectionId).classList.add('active');
+
+            const tabs = document.querySelectorAll('.tab');
+            for (let tab of tabs) {
+                if (tab.textContent.toLowerCase().includes(sectionId.toLowerCase())) {
+                    tab.classList.add('active');
+                    break;
+                }
+            }
+
+            switch(sectionId) {
+                case 'stock':
+                    afficherStock();
+                    break;
+                case 'bilan':
+                    calculerBilan();
+                    break;
+                case 'ventes':
+                    afficherVentes();
+                    break;
+                case 'achats':
+                    afficherAchats();
+                    break;
+                case 'boissons':
+                    afficherBoissons();
+                    break;
+                case 'apports':
+                    afficherApports();
+                    break;
+                case 'remboursements':
+                    afficherRemboursements();
+                    break;
+                case 'offertes':
+                    afficherOfferts();
+                    break;
+                case 'utilisateurs':
+                    if (isAdmin) loadUsersList();
+                    break;
+            }
+        }
+
+        // Gérer affichage onglet utilisateurs
+        function updateUsersTab() {
+            const btn = document.getElementById('usersTabBtn');
+            const section = document.getElementById('usersSection') || document.getElementById('utilisateurs');
+            if (btn) btn.style.display = isAdmin ? 'inline-block' : 'none';
+            if (section) section.style.display = isAdmin ? '' : 'none';
+        }
+
+        // ===== GESTION DES VENTES =====
+        function ajouterVente() {
+            const boissonId = parseInt(document.getElementById('venteBoisson').value);
+            const quantite = parseInt(document.getElementById('venteQuantite').value);
+            const date = document.getElementById('venteDate').value;
+
+            if (!boissonId || !quantite || quantite <= 0 || !date) {
+                alert('❌ Veuillez remplir tous les champs');
+                return;
+            }
+
+            const boisson = data.boissons.find(b => b.id === boissonId);
+            if (!boisson) {
+                alert('❌ Produit non trouvé');
+                return;
+            }
+
+            data.ventes.push({
+                id: Date.now(),
+                boissonId,
+                boissonNom: boisson.nom,
+                quantite,
+                prixUnitaire: boisson.prix,
+                total: quantite * boisson.prix,
+                date
+            });
+
+            trierDonneesParDate();
+            document.getElementById('venteQuantite').value = '';
+            afficherVentes();
+            debounceSauvegarde();
+        }
+
+        function afficherVentes() {
+            const tbody = document.getElementById('tbodyVentes');
+            tbody.innerHTML = '';
+
+            const ventesTriees = [...data.ventes].sort((a, b) => {
+                return triVentes === 'desc' ?
+                    new Date(b.date) - new Date(a.date) :
+                    new Date(a.date) - new Date(b.date);
+            });
+
+            ventesTriees.forEach(vente => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <span id="vente-date-${vente.id}">${new Date(vente.date).toLocaleDateString('fr-FR')}</span>
+                        <input type="date" id="edit-vente-date-${vente.id}" class="edit-date" value="${vente.date}"
+                               style="display:none" onchange="sauvegarderModificationVente(${vente.id})">
+                    </td>
+                    <td>${vente.boissonNom}</td>
+                    <td>
+                        <span id="vente-quantite-${vente.id}">${vente.quantite}</span>
+                        <input type="number" id="edit-vente-quantite-${vente.id}" class="edit-input" value="${vente.quantite}" min="1"
+                               style="display:none" onchange="sauvegarderModificationVente(${vente.id})">
+                    </td>
+                    <td>${vente.prixUnitaire.toFixed(2)} €</td>
+                    <td>${vente.total.toFixed(2)} €</td>
+                    <td class="no-print">
+                        <div class="action-icons">
+                            <button class="icon-btn edit-btn" onclick="activerEditionVente(${vente.id})"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn delete-btn" onclick="supprimerVente(${vente.id})"><i class="fas fa-trash"></i></button>
+                            <button class="icon-btn cancel-btn" onclick="annulerEditionVente(${vente.id})" style="display:none;"><i class="fas fa-times"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            mettreAJourIndicateursTri();
+        }
+
+        function activerEditionVente(id) {
+            document.getElementById(`vente-date-${id}`).style.display = 'none';
+            document.getElementById(`vente-quantite-${id}`).style.display = 'none';
+
+            document.getElementById(`edit-vente-date-${id}`).style.display = 'block';
+            document.getElementById(`edit-vente-quantite-${id}`).style.display = 'block';
+
+            document.querySelector(`button[onclick="annulerEditionVente(${id})"]`).style.display = 'inline-block';
+            document.getElementById(`edit-vente-date-${id}`).focus();
+        }
+
+        function annulerEditionVente(id) {
+            document.getElementById(`vente-date-${id}`).style.display = 'block';
+            document.getElementById(`vente-quantite-${id}`).style.display = 'block';
+
+            document.getElementById(`edit-vente-date-${id}`).style.display = 'none';
+            document.getElementById(`edit-vente-quantite-${id}`).style.display = 'none';
+
+            document.querySelector(`button[onclick="annulerEditionVente(${id})"]`).style.display = 'none';
+        }
+
+        function sauvegarderModificationVente(id) {
+            const date = document.getElementById(`edit-vente-date-${id}`).value;
+            const quantite = parseInt(document.getElementById(`edit-vente-quantite-${id}`).value);
+
+            if (!date || !quantite || quantite <= 0) {
+                alert('❌ Veuillez corriger les erreurs');
+                return;
+            }
+
+            const vente = data.ventes.find(v => v.id === id);
+            if (vente) {
+                vente.date = date;
+                vente.quantite = quantite;
+                vente.total = quantite * vente.prixUnitaire;
+            }
+
+            trierDonneesParDate();
+            afficherVentes();
+            debounceSauvegarde();
+        }
+
+        function trierVentes() {
+            triVentes = triVentes === 'desc' ? 'asc' : 'desc';
+            afficherVentes();
+        }
+
+        function supprimerVente(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette vente ?')) return;
+            data.ventes = data.ventes.filter(vente => vente.id !== id);
+            afficherVentes();
+            debounceSauvegarde();
+            alert('🗑️ Vente supprimée !');
+        }
+
+        // ===== GESTION DES ACHATS =====
+        function ajouterAchat() {
+            const boissonId = parseInt(document.getElementById('achatBoisson').value);
+            const quantite = parseInt(document.getElementById('achatQuantite').value);
+            const prix = parseFloat(document.getElementById('achatPrix').value);
+            const date = document.getElementById('achatDate').value;
+
+            if (!boissonId || !quantite || quantite <= 0 || !prix || prix <= 0 || !date) {
+                alert('❌ Veuillez remplir tous les champs');
+                return;
+            }
+
+            const boisson = data.boissons.find(b => b.id === boissonId);
+            data.achats.push({
+                id: Date.now(),
+                boissonId,
+                boissonNom: boisson.nom,
+                quantite,
+                prixUnitaire: prix,
+                total: quantite * prix,
+                date
+            });
+
+            trierDonneesParDate();
+            document.getElementById('achatQuantite').value = '';
+            document.getElementById('achatPrix').value = '';
+            afficherAchats();
+            debounceSauvegarde();
+        }
+
+        function afficherAchats() {
+            const tbody = document.getElementById('tbodyAchats');
+            tbody.innerHTML = '';
+
+            const achatsTries = [...data.achats].sort((a, b) => {
+                return triAchats === 'desc' ?
+                    new Date(b.date) - new Date(a.date) :
+                    new Date(a.date) - new Date(b.date);
+            });
+
+            achatsTries.forEach(achat => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <span id="achat-date-${achat.id}">${new Date(achat.date).toLocaleDateString('fr-FR')}</span>
+                        <input type="date" id="edit-achat-date-${achat.id}" class="edit-date" value="${achat.date}"
+                               style="display:none" onchange="sauvegarderModificationAchat(${achat.id})">
+                    </td>
+                    <td>${achat.boissonNom}</td>
+                    <td>
+                        <span id="achat-quantite-${achat.id}">${achat.quantite}</span>
+                        <input type="number" id="edit-achat-quantite-${achat.id}" class="edit-input" value="${achat.quantite}" min="1"
+                               style="display:none" onchange="sauvegarderModificationAchat(${achat.id})">
+                    </td>
+                    <td>
+                        <span id="achat-prix-${achat.id}">${achat.prixUnitaire.toFixed(2)} €</span>
+                        <input type="number" id="edit-achat-prix-${achat.id}" class="edit-input" value="${achat.prixUnitaire}" step="0.01"
+                               style="display:none" onchange="sauvegarderModificationAchat(${achat.id})">
+                    </td>
+                    <td>${achat.total.toFixed(2)} €</td>
+                    <td class="no-print">
+                        <div class="action-icons">
+                            <button class="icon-btn edit-btn" onclick="activerEditionAchat(${achat.id})"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn delete-btn" onclick="supprimerAchat(${achat.id})"><i class="fas fa-trash"></i></button>
+                            <button class="icon-btn cancel-btn" onclick="annulerEditionAchat(${achat.id})" style="display:none;"><i class="fas fa-times"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            mettreAJourIndicateursTri();
+        }
+
+        function activerEditionAchat(id) {
+            document.getElementById(`achat-date-${id}`).style.display = 'none';
+            document.getElementById(`achat-quantite-${id}`).style.display = 'none';
+            document.getElementById(`achat-prix-${id}`).style.display = 'none';
+
+            document.getElementById(`edit-achat-date-${id}`).style.display = 'block';
+            document.getElementById(`edit-achat-quantite-${id}`).style.display = 'block';
+            document.getElementById(`edit-achat-prix-${id}`).style.display = 'block';
+
+            document.querySelector(`button[onclick="annulerEditionAchat(${id})"]`).style.display = 'inline-block';
+            document.getElementById(`edit-achat-date-${id}`).focus();
+        }
+
+        function annulerEditionAchat(id) {
+            document.getElementById(`achat-date-${id}`).style.display = 'block';
+            document.getElementById(`achat-quantite-${id}`).style.display = 'block';
+            document.getElementById(`achat-prix-${id}`).style.display = 'block';
+
+            document.getElementById(`edit-achat-date-${id}`).style.display = 'none';
+            document.getElementById(`edit-achat-quantite-${id}`).style.display = 'none';
+            document.getElementById(`edit-achat-prix-${id}`).style.display = 'none';
+
+            document.querySelector(`button[onclick="annulerEditionAchat(${id})"]`).style.display = 'none';
+        }
+
+        function sauvegarderModificationAchat(id) {
+            const date = document.getElementById(`edit-achat-date-${id}`).value;
+            const quantite = parseInt(document.getElementById(`edit-achat-quantite-${id}`).value);
+            const prix = parseFloat(document.getElementById(`edit-achat-prix-${id}`).value);
+
+            if (!date || !quantite || quantite <= 0 || !prix || prix <= 0) {
+                alert('❌ Veuillez corriger les erreurs');
+                return;
+            }
+
+            const achat = data.achats.find(a => a.id === id);
+            if (achat) {
+                achat.date = date;
+                achat.quantite = quantite;
+                achat.prixUnitaire = prix;
+                achat.total = quantite * prix;
+            }
+
+            trierDonneesParDate();
+            afficherAchats();
+            debounceSauvegarde();
+        }
+
+        function trierAchats() {
+            triAchats = triAchats === 'desc' ? 'asc' : 'desc';
+            afficherAchats();
+        }
+
+        function supprimerAchat(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cet achat ?')) return;
+            data.achats = data.achats.filter(achat => achat.id !== id);
+            afficherAchats();
+            debounceSauvegarde();
+            alert('🗑️ Achat supprimé !');
+        }
+
+        // ===== GESTION DES APPORTS =====
+        function ajouterApport() {
+            const nom = document.getElementById('apportNom').value.trim();
+            const montant = parseFloat(document.getElementById('apportMontant').value);
+            const date = document.getElementById('apportDate').value;
+
+            if (!nom || !montant || montant <= 0 || !date) {
+                alert('❌ Veuillez remplir tous les champs');
+                return;
+            }
+
+            data.apports.push({ id: Date.now(), nom, montant, date });
+            trierDonneesParDate();
+            document.getElementById('apportNom').value = '';
+            document.getElementById('apportMontant').value = '';
+
+            afficherApports();
+            mettreAJourSelects();
+            debounceSauvegarde();
+        }
+
+        function afficherApports() {
+            const tbody = document.getElementById('tbodyApports');
+            tbody.innerHTML = '';
+
+            const apportsTries = [...data.apports].sort((a, b) => {
+                return triApports === 'desc' ?
+                    new Date(b.date) - new Date(a.date) :
+                    new Date(a.date) - new Date(b.date);
+            });
+
+            apportsTries.forEach(apport => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <span id="apport-date-${apport.id}">${new Date(apport.date).toLocaleDateString('fr-FR')}</span>
+                        <input type="date" id="edit-apport-date-${apport.id}" class="edit-date" value="${apport.date}"
+                               style="display:none" onchange="sauvegarderModificationApport(${apport.id})">
+                    </td>
+                    <td>
+                        <span id="apport-nom-${apport.id}">${apport.nom}</span>
+                        <input type="text" id="edit-apport-nom-${apport.id}" class="edit-input" value="${apport.nom}"
+                               style="display:none" onchange="sauvegarderModificationApport(${apport.id})">
+                    </td>
+                    <td>
+                        <span id="apport-montant-${apport.id}">${apport.montant.toFixed(2)} €</span>
+                        <input type="number" id="edit-apport-montant-${apport.id}" class="edit-input" value="${apport.montant}" step="0.01"
+                               style="display:none" onchange="sauvegarderModificationApport(${apport.id})">
+                    </td>
+                    <td class="no-print">
+                        <div class="action-icons">
+                            <button class="icon-btn edit-btn" onclick="activerEditionApport(${apport.id})"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn delete-btn" onclick="supprimerApport(${apport.id})"><i class="fas fa-trash"></i></button>
+                            <button class="icon-btn cancel-btn" onclick="annulerEditionApport(${apport.id})" style="display:none;"><i class="fas fa-times"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            mettreAJourIndicateursTri();
+        }
+
+        function activerEditionApport(id) {
+            document.getElementById(`apport-date-${id}`).style.display = 'none';
+            document.getElementById(`apport-nom-${id}`).style.display = 'none';
+            document.getElementById(`apport-montant-${id}`).style.display = 'none';
+
+            document.getElementById(`edit-apport-date-${id}`).style.display = 'block';
+            document.getElementById(`edit-apport-nom-${id}`).style.display = 'block';
+            document.getElementById(`edit-apport-montant-${id}`).style.display = 'block';
+
+            document.querySelector(`button[onclick="annulerEditionApport(${id})"]`).style.display = 'inline-block';
+            document.getElementById(`edit-apport-date-${id}`).focus();
+        }
+
+        function annulerEditionApport(id) {
+            document.getElementById(`apport-date-${id}`).style.display = 'block';
+            document.getElementById(`apport-nom-${id}`).style.display = 'block';
+            document.getElementById(`apport-montant-${id}`).style.display = 'block';
+
+            document.getElementById(`edit-apport-date-${id}`).style.display = 'none';
+            document.getElementById(`edit-apport-nom-${id}`).style.display = 'none';
+            document.getElementById(`edit-apport-montant-${id}`).style.display = 'none';
+
+            document.querySelector(`button[onclick="annulerEditionApport(${id})"]`).style.display = 'none';
+        }
+
+        function sauvegarderModificationApport(id) {
+            const date = document.getElementById(`edit-apport-date-${id}`).value;
+            const nom = document.getElementById(`edit-apport-nom-${id}`).value;
+            const montant = parseFloat(document.getElementById(`edit-apport-montant-${id}`).value);
+
+            if (!nom || !montant || montant <= 0 || !date) {
+                alert('❌ Veuillez corriger les erreurs');
+                return;
+            }
+
+            const apport = data.apports.find(a => a.id === id);
+            if (apport) {
+                apport.date = date;
+                apport.nom = nom;
+                apport.montant = montant;
+            }
+
+            trierDonneesParDate();
+            afficherApports();
+            mettreAJourSelects();
+            debounceSauvegarde();
+        }
+
+        function trierApports() {
+            triApports = triApports === 'desc' ? 'asc' : 'desc';
+            afficherApports();
+        }
+
+        function supprimerApport(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cet apport ?')) return;
+            data.apports = data.apports.filter(apport => apport.id !== id);
+            afficherApports();
+            mettreAJourSelects();
+            debounceSauvegarde();
+            alert('🗑️ Apport supprimé !');
+        }
+
+        // ===== GESTION DES REMBOURSEMENTS =====
+        function ajouterRemboursement() {
+            const nom = document.getElementById('remboursementContributeur').value;
+            const montant = parseFloat(document.getElementById('remboursementMontant').value);
+
+            if (!nom || !montant || montant <= 0) {
+                alert('❌ Veuillez remplir tous les champs');
+                return;
+            }
+
+            data.remboursements.push({
+                id: Date.now(),
+                contributeurNom: nom,
+                montant,
+                date: getDateDuJour()
+            });
+
+            trierDonneesParDate();
+            document.getElementById('remboursementMontant').value = '';
+            afficherRemboursements();
+            debounceSauvegarde();
+        }
+
+        function afficherRemboursements() {
+            const tbody = document.getElementById('tbodyRemboursements');
+            tbody.innerHTML = '';
+
+            const remboursementsTries = [...data.remboursements].sort((a, b) => {
+                return triRemboursements === 'desc' ?
+                    new Date(b.date) - new Date(a.date) :
+                    new Date(a.date) - new Date(b.date);
+            });
+
+            remboursementsTries.forEach(remboursement => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <span id="remboursement-date-${remboursement.id}">${new Date(remboursement.date).toLocaleDateString('fr-FR')}</span>
+                        <input type="date" id="edit-remboursement-date-${remboursement.id}" class="edit-date" value="${remboursement.date}"
+                               style="display:none" onchange="sauvegarderModificationRemboursement(${remboursement.id})">
+                    </td>
+                    <td>
+                        <span id="remboursement-nom-${remboursement.id}">${remboursement.contributeurNom}</span>
+                        <input type="text" id="edit-remboursement-nom-${remboursement.id}" class="edit-input" value="${remboursement.contributeurNom}"
+                               style="display:none" onchange="sauvegarderModificationRemboursement(${remboursement.id})">
+                    </td>
+                    <td>
+                        <span id="remboursement-montant-${remboursement.id}">${remboursement.montant.toFixed(2)} €</span>
+                        <input type="number" id="edit-remboursement-montant-${remboursement.id}" class="edit-input" value="${remboursement.montant}" step="0.01"
+                               style="display:none" onchange="sauvegarderModificationRemboursement(${remboursement.id})">
+                    </td>
+                    <td class="no-print">
+                        <div class="action-icons">
+                            <button class="icon-btn edit-btn" onclick="activerEditionRemboursement(${remboursement.id})"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn delete-btn" onclick="supprimerRemboursement(${remboursement.id})"><i class="fas fa-trash"></i></button>
+                            <button class="icon-btn cancel-btn" onclick="annulerEditionRemboursement(${remboursement.id})" style="display:none;"><i class="fas fa-times"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            mettreAJourIndicateursTri();
+        }
+
+        function activerEditionRemboursement(id) {
+            document.getElementById(`remboursement-date-${id}`).style.display = 'none';
+            document.getElementById(`remboursement-nom-${id}`).style.display = 'none';
+            document.getElementById(`remboursement-montant-${id}`).style.display = 'none';
+
+            document.getElementById(`edit-remboursement-date-${id}`).style.display = 'block';
+            document.getElementById(`edit-remboursement-nom-${id}`).style.display = 'block';
+            document.getElementById(`edit-remboursement-montant-${id}`).style.display = 'block';
+
+            document.querySelector(`button[onclick="annulerEditionRemboursement(${id})"]`).style.display = 'inline-block';
+            document.getElementById(`edit-remboursement-date-${id}`).focus();
+        }
+
+        function annulerEditionRemboursement(id) {
+            document.getElementById(`remboursement-date-${id}`).style.display = 'block';
+            document.getElementById(`remboursement-nom-${id}`).style.display = 'block';
+            document.getElementById(`remboursement-montant-${id}`).style.display = 'block';
+
+            document.getElementById(`edit-remboursement-date-${id}`).style.display = 'none';
+            document.getElementById(`edit-remboursement-nom-${id}`).style.display = 'none';
+            document.getElementById(`edit-remboursement-montant-${id}`).style.display = 'none';
+
+            document.querySelector(`button[onclick="annulerEditionRemboursement(${id})"]`).style.display = 'none';
+        }
+
+        function sauvegarderModificationRemboursement(id) {
+            const date = document.getElementById(`edit-remboursement-date-${id}`).value;
+            const nom = document.getElementById(`edit-remboursement-nom-${id}`).value;
+            const montant = parseFloat(document.getElementById(`edit-remboursement-montant-${id}`).value);
+
+            if (!nom || !montant || montant <= 0 || !date) {
+                alert('❌ Veuillez corriger les erreurs');
+                return;
+            }
+
+            const remboursement = data.remboursements.find(r => r.id === id);
+            if (remboursement) {
+                remboursement.date = date;
+                remboursement.contributeurNom = nom;
+                remboursement.montant = montant;
+            }
+
+            trierDonneesParDate();
+            afficherRemboursements();
+            mettreAJourSelects();
+            debounceSauvegarde();
+        }
+
+        function trierRemboursements() {
+            triRemboursements = triRemboursements === 'desc' ? 'asc' : 'desc';
+            afficherRemboursements();
+        }
+
+        function supprimerRemboursement(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce remboursement ?')) return;
+            data.remboursements = data.remboursements.filter(remboursement => remboursement.id !== id);
+            afficherRemboursements();
+            mettreAJourSelects();
+            debounceSauvegarde();
+            alert('🗑️ Remboursement supprimé !');
+        }
+
+        // ===== GESTION DES CONSOMMATIONS OFFERTES =====
+        function ajouterOffert() {
+            const boissonId = parseInt(document.getElementById('offertBoisson').value);
+            const quantite = parseInt(document.getElementById('offertQuantite').value);
+            const motif = document.getElementById('offertMotif').value.trim();
+            const date = document.getElementById('offertDate').value;
+
+            if (!boissonId || !quantite || quantite <= 0 || !motif || !date) {
+                alert('❌ Veuillez remplir tous les champs');
+                return;
+            }
+
+            const boisson = data.boissons.find(b => b.id === boissonId);
+            if (!boisson) {
+                alert('❌ Produit non trouvé');
+                return;
+            }
+
+            const valeurVente = quantite * boisson.prix;
+
+            data.offerts.push({
+                id: Date.now(),
+                boissonId,
+                boissonNom: boisson.nom,
+                quantite,
+                valeurVente: valeurVente,
+                motif,
+                date
+            });
+
+            trierDonneesParDate();
+            document.getElementById('offertQuantite').value = '';
+            document.getElementById('offertMotif').value = '';
+            afficherOfferts();
+            debounceSauvegarde();
+        }
+
+        function afficherOfferts() {
+            const tbody = document.getElementById('tbodyOfferts');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            const offertsTries = [...data.offerts].sort((a, b) => {
+                return triOfferts === 'desc' ?
+                    new Date(b.date) - new Date(a.date) :
+                    new Date(a.date) - new Date(b.date);
+            });
+
+            offertsTries.forEach(offert => {
+                const coutMoyen = getCoutAchatMoyen(offert.boissonId);
+                const coutReel = offert.quantite * coutMoyen;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <span id="offert-date-${offert.id}">${new Date(offert.date).toLocaleDateString('fr-FR')}</span>
+                        <input type="date" id="edit-offert-date-${offert.id}" class="edit-date" value="${offert.date}"
+                               style="display:none" onchange="sauvegarderModificationOffert(${offert.id})">
+                    </td>
+                    <td>${offert.boissonNom}</td>
+                    <td>
+                        <span id="offert-quantite-${offert.id}">${offert.quantite}</span>
+                        <input type="number" id="edit-offert-quantite-${offert.id}" class="edit-input" value="${offert.quantite}" min="1"
+                               style="display:none" onchange="sauvegarderModificationOffert(${offert.id})">
+                    </td>
+                    <td>${offert.valeurVente.toFixed(2)} €</td>
+                    <td>${coutReel.toFixed(2)} €</td>
+                    <td>
+                        <span id="offert-motif-${offert.id}">${offert.motif}</span>
+                        <input type="text" id="edit-offert-motif-${offert.id}" class="edit-input" value="${offert.motif}"
+                               style="display:none" onchange="sauvegarderModificationOffert(${offert.id})">
+                    </td>
+                    <td class="no-print">
+                        <div class="action-icons">
+                            <button class="icon-btn edit-btn" onclick="activerEditionOffert(${offert.id})"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn delete-btn" onclick="supprimerOffert(${offert.id})"><i class="fas fa-trash"></i></button>
+                            <button class="icon-btn cancel-btn" onclick="annulerEditionOffert(${offert.id})" style="display:none;"><i class="fas fa-times"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            mettreAJourIndicateursTri();
+        }
+
+        function activerEditionOffert(id) {
+            document.getElementById(`offert-date-${id}`).style.display = 'none';
+            document.getElementById(`offert-quantite-${id}`).style.display = 'none';
+            document.getElementById(`offert-motif-${id}`).style.display = 'none';
+
+            document.getElementById(`edit-offert-date-${id}`).style.display = 'block';
+            document.getElementById(`edit-offert-quantite-${id}`).style.display = 'block';
+            document.getElementById(`edit-offert-motif-${id}`).style.display = 'block';
+
+            document.querySelector(`button[onclick="annulerEditionOffert(${id})"]`).style.display = 'inline-block';
+            document.getElementById(`edit-offert-date-${id}`).focus();
+        }
+
+        function annulerEditionOffert(id) {
+            document.getElementById(`offert-date-${id}`).style.display = 'block';
+            document.getElementById(`offert-quantite-${id}`).style.display = 'block';
+            document.getElementById(`offert-motif-${id}`).style.display = 'block';
+
+            document.getElementById(`edit-offert-date-${id}`).style.display = 'none';
+            document.getElementById(`edit-offert-quantite-${id}`).style.display = 'none';
+            document.getElementById(`edit-offert-motif-${id}`).style.display = 'none';
+
+            document.querySelector(`button[onclick="annulerEditionOffert(${id})"]`).style.display = 'none';
+        }
+
+        function sauvegarderModificationOffert(id) {
+            const date = document.getElementById(`edit-offert-date-${id}`).value;
+            const quantite = parseInt(document.getElementById(`edit-offert-quantite-${id}`).value);
+            const motif = document.getElementById(`edit-offert-motif-${id}`).value.trim();
+
+            if (!date || !quantite || quantite <= 0 || !motif) {
+                alert('❌ Veuillez corriger les erreurs');
+                return;
+            }
+
+            const offert = data.offerts.find(o => o.id === id);
+            if (offert) {
+                offert.date = date;
+                offert.quantite = quantite;
+                offert.motif = motif;
+                offert.valeurVente = quantite * offert.prixUnitaire;
+            }
+
+            trierDonneesParDate();
+            afficherOfferts();
+            debounceSauvegarde();
+        }
+
+        function trierOfferts() {
+            triOfferts = triOfferts === 'desc' ? 'asc' : 'desc';
+            afficherOfferts();
+        }
+
+        function supprimerOffert(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette consommation offerte ?')) return;
+            data.offerts = data.offerts.filter(offert => offert.id !== id);
+            afficherOfferts();
+            debounceSauvegarde();
+            alert('🗑️ Consommation offerte supprimée !');
+        }
+
+        // ===== CALCUL DU BILAN CORRIGÉ =====
+        function calculerBilan() {
+            // 1. Calcul des totaux de base
+            const totalApports = data.apports.reduce((sum, a) => sum + a.montant, 0);
+            const totalDepenses = data.achats.reduce((sum, a) => sum + a.total, 0);
+            const totalRecettes = data.ventes.reduce((sum, v) => sum + v.total, 0);
+            const totalRemboursements = data.remboursements.reduce((sum, r) => sum + r.montant, 0);
+
+            // 2. Calcul des coûts séparément
+            let totalOffertsValeurVente = 0;
+            let coutTotalVentes = 0;      // Coût d'achat des produits VENDUS
+            let coutTotalOfferts = 0;     // Coût d'achat des produits OFFERTS
+
+            // Calcul du coût des offres
+            data.offerts.forEach(offert => {
+                totalOffertsValeurVente += offert.valeurVente;
+                const coutMoyen = getCoutAchatMoyen(offert.boissonId);
+                coutTotalOfferts += offert.quantite * coutMoyen;
+            });
+
+            // Calcul du coût des ventes
+            data.ventes.forEach(vente => {
+                const coutMoyen = getCoutAchatMoyen(vente.boissonId);
+                coutTotalVentes += vente.quantite * coutMoyen;
+            });
+
+            // 3. Calculs financiers CORRIGÉS
+            // Le bénéfice net = Recettes - (Coût des ventes + Coût des offres)
+            const beneficeNet = totalRecettes - (coutTotalVentes + coutTotalOfferts);
+
+            // Le solde disponible = Apports + Recettes - Dépenses - Remboursements
+            // IMPORTANT: Les dépenses incluent TOUS les achats, même ceux qui n'ont pas encore été vendus
+            const soldeDisponible = totalApports + totalRecettes - totalDepenses - totalRemboursements;
+
+            // Vérification: La différence doit être égale
+            const difference = totalApports - totalDepenses - totalRemboursements + totalRecettes;
+            const verificationOK = Math.abs(soldeDisponible - difference) < 0.01;
+
+            // 4. Mise à jour de l'interface
+            document.getElementById('totalApportsBilan').textContent = totalApports.toFixed(2) + ' €';
+            document.getElementById('totalDepensesBilan').textContent = totalDepenses.toFixed(2) + ' €';
+            document.getElementById('totalRecettesBilan').textContent = totalRecettes.toFixed(2) + ' €';
+            document.getElementById('totalRemboursementsBilan').textContent = totalRemboursements.toFixed(2) + ' €';
+            document.getElementById('totalOffertsValeurBilan').textContent = totalOffertsValeurVente.toFixed(2) + ' €';
+            document.getElementById('coutVentesBilan').textContent = coutTotalVentes.toFixed(2) + ' €';
+            document.getElementById('coutOffertsBilan').textContent = coutTotalOfferts.toFixed(2) + ' €';
+            document.getElementById('beneficeBilan').textContent = beneficeNet.toFixed(2) + ' €';
+            document.getElementById('soldeDisponibleBilan').textContent = soldeDisponible.toFixed(2) + ' €';
+
+            // Affichage de la vérification
+            const verificationElement = document.getElementById('verificationBilan');
+            if (verificationOK) {
+                verificationElement.textContent = '✓ OK';
+                verificationElement.style.color = '#27ae60';
+            } else {
+                verificationElement.textContent = '❌ Erreur';
+                verificationElement.style.color = '#e74c3c';
+            }
+
+            // Log pour debug
+            console.log('=== VERIFICATION DU BILAN ===');
+            console.log('Apports:', totalApports.toFixed(2));
+            console.log('Dépenses (achats):', totalDepenses.toFixed(2));
+            console.log('Recettes:', totalRecettes.toFixed(2));
+            console.log('Remboursements:', totalRemboursements.toFixed(2));
+            console.log('Coût ventes:', coutTotalVentes.toFixed(2));
+            console.log('Coût offres:', coutTotalOfferts.toFixed(2));
+            console.log('Bénéfice net:', beneficeNet.toFixed(2));
+            console.log('Solde calculé:', soldeDisponible.toFixed(2));
+            console.log('Différence:', difference.toFixed(2));
+            console.log('Vérification:', verificationOK ? 'OK' : 'ERREUR');
+
+            afficherDetailsContributeurs();
+        }
+
+        function afficherDetailsContributeurs() {
+            const tbody = document.getElementById('tbodyContributeurs');
+            tbody.innerHTML = '';
+
+            const contributeurs = {};
+
+            data.apports.forEach(apport => {
+                if (!contributeurs[apport.nom]) {
+                    contributeurs[apport.nom] = { totalApporte: 0, totalRembourse: 0 };
+                }
+                contributeurs[apport.nom].totalApporte += apport.montant;
+            });
+
+            data.remboursements.forEach(remboursement => {
+                if (!contributeurs[remboursement.contributeurNom]) {
+                    contributeurs[remboursement.contributeurNom] = { totalApporte: 0, totalRembourse: 0 };
+                }
+                contributeurs[remboursement.contributeurNom].totalRembourse += remboursement.montant;
+            });
+
+            Object.keys(contributeurs).forEach(nom => {
+                const totalApporte = contributeurs[nom].totalApporte;
+                const totalRembourse = contributeurs[nom].totalRembourse;
+                const resteARembourser = totalApporte - totalRembourse;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${nom}</td>
+                    <td>${totalApporte.toFixed(2)} €</td>
+                    <td>${totalRembourse.toFixed(2)} €</td>
+                    <td>${resteARembourser.toFixed(2)} €</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ===== FONCTIONS RESTANTES =====
+        function mettreAJourSelects() {
+            const selectAchat = document.getElementById('achatBoisson');
+            const selectVente = document.getElementById('venteBoisson');
+            const selectOffert = document.getElementById('offertBoisson');
+            const selectRemboursement = document.getElementById('remboursementContributeur');
+
+            selectAchat.innerHTML = '';
+            selectVente.innerHTML = '';
+            selectOffert.innerHTML = '';
+            selectRemboursement.innerHTML = '';
+
+            data.boissons.forEach(boisson => {
+                const option = document.createElement('option');
+                option.value = boisson.id;
+                option.textContent = `${boisson.nom} (${boisson.prix.toFixed(2)}€)`;
+                selectAchat.appendChild(option.cloneNode(true));
+                selectVente.appendChild(option.cloneNode(true));
+                selectOffert.appendChild(option.cloneNode(true));
+            });
+
+            const nomsContributeurs = [...new Set(data.apports.map(a => a.nom))];
+            nomsContributeurs.forEach(nom => {
+                selectRemboursement.innerHTML += `<option value="${nom}">${nom}</option>`;
+            });
+        }
+
+        function afficherToutesLesDonnees() {
+            afficherApports();
+            afficherBoissons();
+            afficherAchats();
+            afficherVentes();
+            afficherRemboursements();
+            afficherOfferts();
+            afficherStock();
+            calculerBilan();
+            mettreAJourIndicateursTri();
+        }
+
+        // ===== AUTH =====
+        function toggleLoginPanel() {
+            const p = document.getElementById('loginPanel');
+            if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function loginWithGoogle() {
+            try {
+                await signInWithPopup(auth, provider);
+                const p = document.getElementById('loginPanel');
+                if (p) p.style.display = 'none';
+            } catch(e) {
+                const m = document.getElementById('loginPanelMsg');
+                if (m) m.textContent = e.code === 'auth/unauthorized-domain' ? '⚠️ Domaine non autorisé dans Firebase' : e.code === 'auth/popup-closed-by-user' ? '⚠️ Connexion annulée' : '❌ ' + e.message;
+            }
+        }
+
+        async function loginWithEmail() {
+            const email = document.getElementById('loginEmail')?.value?.trim();
+            const password = document.getElementById('loginPassword')?.value;
+            const msg = document.getElementById('loginPanelMsg');
+            if (!email || !password) { if(msg) msg.textContent = '⚠️ Email et mot de passe requis'; return; }
+            try {
+                if(msg) { msg.style.color = '#888'; msg.textContent = '⏳ Connexion...'; }
+                await signInWithEmailAndPassword(auth, email, password);
+                const p = document.getElementById('loginPanel');
+                if (p) p.style.display = 'none';
+            } catch(e) {
+                if(msg) { msg.style.color = '#e74c3c'; msg.textContent = (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') ? '❌ Mot de passe incorrect' : e.code === 'auth/user-not-found' ? '❌ Email inconnu' : '❌ ' + e.message; }
+            }
+        }
+
+        function getSecondaryApp() {
+            if (!secondaryApp) { try { secondaryApp = initializeApp(firebaseConfig, 'secondary'); } catch(e) {} }
+            return secondaryApp;
+        }
+
+        async function addUser() {
+            const email = document.getElementById('newUserEmail')?.value?.trim();
+            const password = document.getElementById('newUserPassword')?.value;
+            const name = document.getElementById('newUserName')?.value?.trim() || '';
+            const msgEl = document.getElementById('addUserMsg');
+            if (!email || !password) { if(msgEl) { msgEl.style.color='#e74c3c'; msgEl.textContent='⚠️ Email et mot de passe requis'; } return; }
+            if (password.length < 6) { if(msgEl) { msgEl.style.color='#e74c3c'; msgEl.textContent='⚠️ Minimum 6 caractères'; } return; }
+            if(msgEl) { msgEl.style.color='#888'; msgEl.textContent='⏳ Création...'; }
+            try {
+                const secAuth = getAuth(getSecondaryApp());
+                const result = await createUserWithEmailAndPassword(secAuth, email, password);
+                await signOut(secAuth);
+                await setDoc(doc(db, 'authorizedUsers', result.user.uid), { email, name, createdAt: new Date().toISOString(), createdBy: currentUser?.email || 'admin', role: 'saisie' });
+                if(msgEl) { msgEl.style.color='#27ae60'; msgEl.textContent=`✅ ${email} ajouté !`; }
+                document.getElementById('newUserEmail').value = '';
+                document.getElementById('newUserPassword').value = '';
+                document.getElementById('newUserName').value = '';
+                loadUsersList();
+            } catch(e) {
+                const m = e.code === 'auth/email-already-in-use' ? '⚠️ Email déjà utilisé' : e.code === 'auth/invalid-email' ? '⚠️ Email invalide' : '❌ ' + e.message;
+                if(msgEl) { msgEl.style.color='#e74c3c'; msgEl.textContent=m; }
+            }
+        }
+
+        async function loadUsersList() {
+            const listEl = document.getElementById('usersList');
+            if (!listEl) return;
+            try {
+                const snap = await getDocs(collection(db, 'authorizedUsers'));
+                if (snap.empty) { listEl.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">Aucun utilisateur autorisé.</p>'; return; }
+                let html = '<table style="width:100%;border-collapse:collapse;font-size:14px;"><thead><tr style="border-bottom:2px solid #dee2e6;"><th style="padding:8px;text-align:left;">Email</th><th style="padding:8px;text-align:left;">Nom</th><th style="padding:8px;text-align:left;">Ajouté le</th><th style="padding:8px;text-align:center;">Action</th></tr></thead><tbody>';
+                snap.forEach(d => {
+                    const u = d.data();
+                    const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '—';
+                    html += `<tr style="border-bottom:1px solid #dee2e6;"><td style="padding:8px;">${u.email}</td><td style="padding:8px;color:#888;">${u.name||'—'}</td><td style="padding:8px;color:#888;">${date}</td><td style="padding:8px;text-align:center;"><button onclick="removeUser('${d.id}','${u.email}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e74c3c;color:#fff;cursor:pointer;font-size:12px;">🗑️ Retirer</button></td></tr>`;
+                });
+                html += '</tbody></table>';
+                listEl.innerHTML = html;
+            } catch(e) { listEl.innerHTML = '<p style="color:#e74c3c;text-align:center;">Erreur de chargement</p>'; }
+        }
+
+        async function removeUser(uid, email) {
+            if (!confirm(`Retirer l'accès à ${email} ?`)) return;
+            try { await deleteDoc(doc(db, 'authorizedUsers', uid)); alert(`✅ ${email} retiré`); loadUsersList(); }
+            catch(e) { alert('❌ Erreur suppression'); }
+        }
+
+        function updateUIForUser(user) {
+            const adminLoginBtn = document.getElementById('adminLoginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userEmailSpan = document.getElementById('userEmail');
+            const usersSection = document.getElementById('usersSection');
+
+            if (user) {
+                currentUser = user;
+                const adminEmails = ["yves.cerisier@orange.fr", "quinquin44@gmail.com", "checheux@gmail.com"];
+                isAdmin = adminEmails.includes(user.email);
+                isSaisie = !isAdmin;
+                if (userEmailSpan) userEmailSpan.innerHTML = isAdmin
+                    ? '<span style="background:#27ae60;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">👑 Admin</span>'
+                    : `<span style="background:#3498db;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">✏️ ${user.email}</span>`;
+                if (logoutBtn) logoutBtn.style.display = 'inline-block';
+                if (adminLoginBtn) adminLoginBtn.style.display = 'none';
+                if (usersSection) usersSection.style.display = isAdmin ? 'block' : 'none';
+                if (typeof updateUsersTab === 'function') updateUsersTab();
+                document.body.classList.remove('readonly-mode');
+                if (!isAdmin) document.body.classList.add('saisie-mode');
+                startRealtimeSync();
+            } else {
+                currentUser = null; isAdmin = false; isSaisie = false;
+                document.body.classList.add('readonly-mode');
+                document.body.classList.remove('saisie-mode');
+                if (logoutBtn) logoutBtn.style.display = 'none';
+                if (adminLoginBtn) adminLoginBtn.style.display = 'inline-block';
+                if (userEmailSpan) userEmailSpan.innerHTML = '';
+                if (usersSection) usersSection.style.display = 'none';
+                startRealtimeSync();
+            }
+        }
+
+        // ===== INITIALISATION =====
+        function initialiser() {
+            const aujourdhui = getDateDuJour();
+            document.getElementById('apportDate').value = aujourdhui;
+            document.getElementById('achatDate').value = aujourdhui;
+            document.getElementById('venteDate').value = aujourdhui;
+            document.getElementById('offertDate').value = aujourdhui;
+
+            // Fermer panel login si clic dehors
+            document.addEventListener('click', (e) => {
+                const panel = document.getElementById('loginPanel');
+                const btn = document.getElementById('adminLoginBtn');
+                if (panel && panel.style.display !== 'none' && !panel.contains(e.target) && e.target !== btn) panel.style.display = 'none';
+            });
+
+            window.addEventListener('beforeunload', () => { if (!isSaving) sauvegarderDonnees(); });
+            setInterval(() => { if (!isSaving && (isAdmin || isSaisie)) debounceSauvegarde(); }, 30000);
+
+            document.body.classList.add('readonly-mode');
+            onAuthStateChanged(auth, (user) => updateUIForUser(user));
+
+            afficherToutesLesDonnees();
+            mettreAJourSelects();
+        }
+
+        // Exposer fonctions globales
+        window.toggleLoginPanel = toggleLoginPanel;
+        window.loginWithGoogle = loginWithGoogle;
+        window.loginWithEmail = loginWithEmail;
+        window.addUser = addUser;
+        window.removeUser = removeUser;
+        window.doLogout = () => signOut(auth);
+
+        // Démarrer
+        document.addEventListener('DOMContentLoaded', initialiser);
+    </script>
+</body>
+</html>
