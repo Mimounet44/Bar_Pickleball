@@ -1628,7 +1628,7 @@
                     <td>
                         <span id="remboursement-date-${remboursement.id}">${new Date(remboursement.date).toLocaleDateString('fr-FR')}</span>
                         <input type="date" id="edit-remboursement-date-${remboursement.id}" class="edit-date" value="${remboursement.date}"
-                               style="display:none" onchange="sauvegarderModificationRemboursement(${remboursement.id})">
+                               style="display:none" onchange="sauvegarderModificationRemboursement(${remboursement.id})" onblur="sauvegarderModificationRemboursement(${remboursement.id})">
                     </td>
                     <td>
                         <span id="remboursement-nom-${remboursement.id}">${remboursement.contributeurNom}</span>
@@ -2164,7 +2164,6 @@
         window.removeUser = removeUser;
         window.doLogout = () => signOut(auth);
 
-        // Fonctions métier
         window.sauvegarderDonnees = sauvegarderDonnees;
         window.imprimerDonnees = imprimerDonnees;
         window.exporterDonnees = exporterDonnees;
@@ -2177,26 +2176,32 @@
         window.supprimerVente = supprimerVente;
         window.activerEditionVente = activerEditionVente;
         window.annulerEditionVente = annulerEditionVente;
+        window.sauvegarderModificationVente = sauvegarderModificationVente;
         window.ajouterAchat = ajouterAchat;
         window.supprimerAchat = supprimerAchat;
         window.activerEditionAchat = activerEditionAchat;
         window.annulerEditionAchat = annulerEditionAchat;
+        window.sauvegarderModificationAchat = sauvegarderModificationAchat;
         window.ajouterApport = ajouterApport;
         window.supprimerApport = supprimerApport;
         window.activerEditionApport = activerEditionApport;
         window.annulerEditionApport = annulerEditionApport;
+        window.sauvegarderModificationApport = sauvegarderModificationApport;
         window.ajouterRemboursement = ajouterRemboursement;
         window.supprimerRemboursement = supprimerRemboursement;
         window.activerEditionRemboursement = activerEditionRemboursement;
         window.annulerEditionRemboursement = annulerEditionRemboursement;
+        window.sauvegarderModificationRemboursement = sauvegarderModificationRemboursement;
         window.ajouterBoisson = ajouterBoisson;
         window.supprimerBoisson = supprimerBoisson;
         window.activerEditionBoisson = activerEditionBoisson;
         window.annulerEditionBoisson = annulerEditionBoisson;
+        window.sauvegarderModificationBoisson = sauvegarderModificationBoisson;
         window.ajouterOffert = ajouterOffert;
         window.supprimerOffert = supprimerOffert;
         window.activerEditionOffert = activerEditionOffert;
         window.annulerEditionOffert = annulerEditionOffert;
+        window.sauvegarderModificationOffert = sauvegarderModificationOffert;
         window.trierVentes = trierVentes;
         window.trierAchats = trierAchats;
         window.trierApports = trierApports;
