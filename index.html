@@ -75,9 +75,10 @@
         .readonly-mode .section select { opacity:0.5; pointer-events:none; }
         /* Exceptions : les onglets restent cliquables en lecture seule */
         .readonly-mode .tabs button { opacity:1 !important; pointer-events:auto !important; }
-        /* La top-bar (connexion, visiteur, déconnexion) reste toujours active */
+        /* La top-bar, les modals et le loginPanel restent toujours actifs */
         .top-bar button, .top-bar input { pointer-events:auto !important; opacity:1 !important; }
         #loginPanel, #loginPanel * { pointer-events:auto !important; opacity:1 !important; }
+        .modal, .modal * { pointer-events:auto !important; opacity:1 !important; }
         /* Vendeur : seul l'onglet Ventes est accessible */
         .saisie-mode .tab:not([data-tab="ventes"]) { display:none !important; }
         /* Budget */
