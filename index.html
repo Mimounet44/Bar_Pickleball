@@ -1097,7 +1097,7 @@ async function removeUser(uid, email) {
     try { await deleteDoc(doc(db, 'authorizedUsers', uid)); alert(`✅ ${email} retiré`); loadUsersList(); }
     catch(e) { alert('❌ Erreur suppression'); }
 }
-function updateUIForUser(user) {
+async function updateUIForUser(user) {
     const adminLoginBtn=document.getElementById('adminLoginBtn');
     const logoutBtn=document.getElementById('logoutBtn');
     const visitorBtn=document.getElementById('visitorLoginBtn');
@@ -1106,20 +1106,48 @@ function updateUIForUser(user) {
     if (user) {
         currentUser=user; isVisitor=false;
         const adminEmails=["yves.cerisier@orange.fr","quinquin44@gmail.com","checheux@gmail.com"];
-        isAdmin=adminEmails.includes(user.email); isSaisie=!isAdmin;
-        if(userEmailSpan) userEmailSpan.innerHTML=isAdmin
-            ?'<span style="background:#27ae60;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">👑 Admin</span>'
-            :`<span style="background:#3498db;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">✏️ Vendeur</span>`;
-        if(logoutBtn) logoutBtn.style.display='inline-block';
-        if(adminLoginBtn) adminLoginBtn.style.display='none';
-        if(visitorBtn) visitorBtn.style.display='none';
-        if(usersSection) usersSection.style.display=isAdmin?'block':'none';
-        updateUsersTab();
-        document.body.classList.remove('readonly-mode','saisie-mode','visitor-mode');
-        if(isAdmin){ /* accès complet */ }
-        else { document.body.classList.add('saisie-mode'); changerSection('ventes'); }
-        startRealtimeSync();
-        if(isAdmin) chargerCodeVisiteur();
+        isAdmin=adminEmails.includes(user.email);
+        isSaisie=false; // sera confirmé après vérification Firestore
+        if(isAdmin) {
+            isSaisie=false;
+            if(userEmailSpan) userEmailSpan.innerHTML='<span style="background:#27ae60;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">👑 Admin</span>';
+            if(logoutBtn) logoutBtn.style.display='inline-block';
+            if(adminLoginBtn) adminLoginBtn.style.display='none';
+            if(visitorBtn) visitorBtn.style.display='none';
+            if(usersSection) usersSection.style.display='block';
+            updateUsersTab();
+            document.body.classList.remove('readonly-mode','saisie-mode');
+            startRealtimeSync();
+            chargerCodeVisiteur();
+        } else {
+            // Vérifier que cet utilisateur est bien un vendeur autorisé
+            try {
+                const snap = await getDoc(doc(db,'authorizedUsers',user.uid));
+                if(snap.exists()) {
+                    isSaisie=true;
+                    if(userEmailSpan) userEmailSpan.innerHTML='<span style="background:#3498db;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">✏️ Vendeur</span>';
+                    if(logoutBtn) logoutBtn.style.display='inline-block';
+                    if(adminLoginBtn) adminLoginBtn.style.display='none';
+                    if(visitorBtn) visitorBtn.style.display='none';
+                    if(usersSection) usersSection.style.display='none';
+                    updateUsersTab();
+                    document.body.classList.remove('readonly-mode');
+                    document.body.classList.add('saisie-mode');
+                    startRealtimeSync();
+                    changerSection('ventes');
+                } else {
+                    // Utilisateur Firebase inconnu → déconnexion
+                    await signOut(auth);
+                    const msg=document.getElementById('loginPanelMsg');
+                    if(msg){msg.style.color='#e74c3c';msg.textContent='❌ Accès refusé. Contactez l'administrateur.';}
+                    const panel=document.getElementById('loginPanel');
+                    if(panel) panel.style.display='block';
+                }
+            } catch(e) {
+                await signOut(auth);
+                alert('❌ Erreur de vérification d'accès. Réessayez.');
+            }
+        }
     } else if(isVisitor) {
         // Mode visiteur : lecture seule, tous onglets visibles
         if(logoutBtn) logoutBtn.style.display='inline-block';
@@ -1190,7 +1218,7 @@ async function validerCodeVisiteur() {
             fermerModalVisiteur();
             updateUIForUser(null);
         } else {
-            msg.style.color='#e74c3c'; msg.textContent='❌ Code incorrect. Contactez l'administrateur.';
+            msg.style.color='#e74c3c'; msg.textContent='❌ Code incorrect. Contactez l\'administrateur.';
         }
     } catch(e) { msg.style.color='#e74c3c'; msg.textContent='❌ Erreur de connexion'; }
 }
@@ -1213,8 +1241,6 @@ function initialiser() {
 // Exposer tout en global
 Object.assign(window, {
     toggleLoginPanel, loginWithGoogle, loginWithEmail, addUser, removeUser,
-    ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode,
-    sauvegarderBudget,
     ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode,
     sauvegarderBudget,
     doLogout: () => { if(isVisitor){ isVisitor=false; isAdmin=false; isSaisie=false; updateUIForUser(null); } else { signOut(auth); } },
