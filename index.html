@@ -101,18 +101,19 @@
             <div id="loginPanelMsg" style="margin-top:8px;font-size:12px;color:#e74c3c;text-align:center;min-height:16px;"></div>
         </div>
         <button id="logoutBtn" onclick="doLogout()" style="display:none;background:transparent;border:1px solid #dee2e6;color:#888;font-size:12px;padding:6px 12px;border-radius:15px;cursor:pointer;">🚪 Déconnexion</button>
+        <button id="visitorLoginBtn" onclick="ouvrirModalVisiteur()" style="background:transparent;border:1px solid #17a2b8;color:#17a2b8;font-size:12px;padding:6px 12px;border-radius:15px;cursor:pointer;">👁️ Visiteur</button>
     </div>
 
     <div class="tabs no-print">
-        <button class="tab" onclick="changerSection('ventes')">Ventes</button>
-        <button class="tab" onclick="changerSection('offertes')">Offertes</button>
-        <button class="tab" onclick="changerSection('stock')">Stock</button>
-        <button class="tab" onclick="changerSection('achats')">Achats</button>
-        <button class="tab" onclick="changerSection('boissons')">Produits</button>
-        <button class="tab" onclick="changerSection('bilan')">Bilan</button>
-        <button class="tab" onclick="changerSection('apports')">Apports</button>
-        <button class="tab" onclick="changerSection('remboursements')">Remboursements</button>
-        <button class="tab" onclick="changerSection('utilisateurs')" id="usersTabBtn" style="display:none;">👥 Utilisateurs</button>
+        <button class="tab" data-tab="ventes" onclick="changerSection('ventes')">🛒 Ventes</button>
+        <button class="tab" data-tab="offertes" onclick="changerSection('offertes')">🎁 Offertes</button>
+        <button class="tab" data-tab="stock" onclick="changerSection('stock')">📦 Stock</button>
+        <button class="tab" data-tab="achats" onclick="changerSection('achats')">🛍️ Achats</button>
+        <button class="tab" data-tab="boissons" onclick="changerSection('boissons')">🍺 Produits</button>
+        <button class="tab" data-tab="bilan" onclick="changerSection('bilan')">📊 Bilan</button>
+        <button class="tab" data-tab="apports" onclick="changerSection('apports')">💰 Apports</button>
+        <button class="tab" data-tab="remboursements" onclick="changerSection('remboursements')">💸 Remboursements</button>
+        <button class="tab" data-tab="utilisateurs" onclick="changerSection('utilisateurs')" id="usersTabBtn" style="display:none;">👥 Utilisateurs</button>
     </div>
 
     <!-- Section Ventes -->
@@ -224,7 +225,28 @@
 
     <!-- Section Bilan -->
     <div id="bilan" class="section">
-        <h2>Bilan financier</h2>
+        <h2>📊 Bilan financier</h2>
+        <!-- Budget réapprovisionnement -->
+        <div class="budget-card" id="budgetCard">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                <div>
+                    <h3>🛒 Budget réapprovisionnement</h3>
+                    <div style="font-size:24px;font-weight:700;" id="budgetSolde">— €</div>
+                    <div style="font-size:12px;opacity:.8;" id="budgetDetail">restants sur <span id="budgetTotal">60</span> €</div>
+                </div>
+                <div id="budgetAdminCtrl" style="display:none;text-align:right;">
+                    <div style="font-size:11px;opacity:.75;margin-bottom:4px;">Modifier le budget</div>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <input type="number" id="budgetInput" min="0" step="5" style="width:80px;padding:6px;border-radius:6px;border:none;font-size:14px;text-align:center;">
+                        <button onclick="sauvegarderBudget()" style="padding:6px 12px;border:none;border-radius:6px;background:rgba(255,255,255,.25);color:white;font-weight:700;cursor:pointer;font-size:13px;">✓</button>
+                    </div>
+                </div>
+            </div>
+            <div class="budget-bar-bg">
+                <div class="budget-bar-fill" id="budgetBarFill" style="width:100%;"></div>
+            </div>
+            <div style="font-size:11px;opacity:.75;" id="budgetAchatsInfo">Aucun achat enregistré</div>
+        </div>
         <div class="summary-grid">
             <div class="summary-card"><h3>Total Apports</h3><p id="totalApportsBilan">0.00 €</p></div>
             <div class="summary-card"><h3>Total Dépenses</h3><p id="totalDepensesBilan">0.00 €</p></div>
@@ -290,7 +312,17 @@
     <!-- Section Utilisateurs (admin only) -->
     <div id="utilisateurs" class="section no-print" style="display:none;">
         <h2>👥 Gestion des accès</h2>
-        <p style="color:#888;margin-bottom:16px;font-size:14px;">Ajoutez des utilisateurs autorisés à saisir des données.</p>
+        <!-- Code visiteur -->
+        <div style="background:#e8f4fd;border:1px solid #bee3f8;border-radius:10px;padding:16px;margin-bottom:20px;">
+            <h3 style="margin-bottom:10px;color:#2980b9;">👁️ Code d'accès visiteur</h3>
+            <p style="color:#555;font-size:13px;margin-bottom:12px;">Les visiteurs peuvent consulter toutes les données sans modifier quoi que ce soit.</p>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <div style="background:white;border:2px solid #bee3f8;border-radius:8px;padding:8px 20px;font-size:22px;font-weight:700;letter-spacing:4px;color:#2980b9;" id="currentVisitorCode">——</div>
+                <button onclick="regenererCode()" class="btn-info btn-small" style="white-space:nowrap;">🔄 Nouveau code</button>
+            </div>
+            <div id="visitorCodeMsg" style="margin-top:8px;font-size:12px;color:#27ae60;min-height:16px;"></div>
+        </div>
+        <p style="color:#888;margin-bottom:16px;font-size:14px;">Ajoutez des utilisateurs autorisés à saisir des données (accès à l'onglet Ventes uniquement).</p>
         <div style="background:#f8f9fa;border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid #dee2e6;">
             <h3 style="margin-bottom:12px;">➕ Ajouter un utilisateur</h3>
             <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
@@ -303,6 +335,38 @@
         </div>
         <h3 style="margin-bottom:12px;">📋 Utilisateurs autorisés</h3>
         <div id="usersList"><p style="color:#888;text-align:center;padding:20px;">Chargement...</p></div>
+    </div>
+</div>
+
+<!-- Modal Visiteur -->
+<div id="visitorModal" class="modal no-print">
+    <div class="modal-content" style="max-width:320px;">
+        <h3>👁️ Accès Visiteur</h3>
+        <p style="color:#888;font-size:13px;margin:10px 0 16px;">Entrez le code d'accès fourni par l'administrateur.</p>
+        <input type="text" id="visitorCodeInput" placeholder="Code à 6 chiffres" maxlength="6"
+            style="width:100%;padding:14px;border:2px solid #dee2e6;border-radius:8px;font-size:22px;text-align:center;letter-spacing:6px;font-weight:700;"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <div id="visitorCodeMsg2" style="margin-top:8px;font-size:13px;color:#e74c3c;min-height:18px;text-align:center;"></div>
+        <div class="modal-buttons">
+            <button class="btn-info" onclick="validerCodeVisiteur()">👁️ Accéder</button>
+            <button class="btn-warning" onclick="fermerModalVisiteur()">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Visiteur -->
+<div id="visitorModal" class="modal no-print">
+    <div class="modal-content" style="max-width:320px;">
+        <h3>👁️ Accès Visiteur</h3>
+        <p style="color:#888;font-size:13px;margin:10px 0 16px;">Entrez le code d'accès fourni par l'administrateur.</p>
+        <input type="text" id="visitorCodeInput" placeholder="Code à 6 chiffres" maxlength="6"
+            style="width:100%;padding:14px;border:2px solid #dee2e6;border-radius:8px;font-size:22px;text-align:center;letter-spacing:6px;font-weight:700;"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <div id="visitorCodeMsg2" style="margin-top:8px;font-size:13px;color:#e74c3c;min-height:18px;text-align:center;"></div>
+        <div class="modal-buttons">
+            <button class="btn-info" onclick="validerCodeVisiteur()">👁️ Accéder</button>
+            <button class="btn-warning" onclick="fermerModalVisiteur()">Annuler</button>
+        </div>
     </div>
 </div>
 
@@ -320,7 +384,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -338,8 +402,9 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-let isAdmin = false, isSaisie = false, currentUser = null, secondaryApp = null, unsubscribeSnapshot = null;
-let data = { apports: [], boissons: [], achats: [], ventes: [], remboursements: [], offerts: [] };
+let isAdmin = false, isSaisie = false, isVisitor = false, currentUser = null, secondaryApp = null, unsubscribeSnapshot = null;
+let data = { apports: [], boissons: [], achats: [], ventes: [], remboursements: [], offerts: [], budgetReappro: 60 };
+let visitorCode = null; // chargé depuis Firestore
 let saveTimeout, isSaving = false;
 let triApports = 'desc', triAchats = 'desc', triVentes = 'desc', triRemboursements = 'desc', triOfferts = 'desc';
 
@@ -907,6 +972,37 @@ function calculerBilan() {
     vel.textContent = verificationOK ? '✓ OK' : '❌ Erreur';
     vel.style.color = verificationOK ? '#27ae60' : '#e74c3c';
     afficherDetailsContributeurs();
+    mettreAJourBudget();
+}
+function mettreAJourBudget() {
+    const budget = data.budgetReappro || 60;
+    const depenses = data.achats.reduce((s,a) => s+a.total, 0);
+    const restant = budget - depenses;
+    const pct = Math.max(0, Math.min(100, (restant / budget) * 100));
+    const el = id => document.getElementById(id);
+    if(!el('budgetSolde')) return;
+    el('budgetSolde').textContent = restant.toFixed(2)+' €';
+    el('budgetTotal').textContent = budget.toFixed(2);
+    const fill = el('budgetBarFill');
+    fill.style.width = pct+'%';
+    fill.className = 'budget-bar-fill' + (pct < 20 ? ' danger' : pct < 50 ? ' warn' : '');
+    // Liste des achats
+    if(data.achats.length === 0) {
+        el('budgetAchatsInfo').textContent = 'Aucun achat enregistré — budget intact';
+    } else {
+        const nb = data.achats.length;
+        el('budgetAchatsInfo').textContent = `${nb} achat${nb>1?'s':''} — ${depenses.toFixed(2)} € dépensé${nb>1?'s':''} sur ${budget.toFixed(2)} €`;
+    }
+    // Input admin
+    if(el('budgetInput')) el('budgetInput').value = budget;
+    if(el('budgetAdminCtrl')) el('budgetAdminCtrl').style.display = isAdmin ? 'block' : 'none';
+}
+function sauvegarderBudget() {
+    const val = parseFloat(document.getElementById('budgetInput').value);
+    if (isNaN(val) || val < 0) { alert('❌ Montant invalide'); return; }
+    data.budgetReappro = val;
+    debounceSauvegarde();
+    mettreAJourBudget();
 }
 function afficherDetailsContributeurs() {
     const tbody = document.getElementById('tbodyContributeurs'); tbody.innerHTML = '';
@@ -1004,32 +1100,99 @@ async function removeUser(uid, email) {
 function updateUIForUser(user) {
     const adminLoginBtn=document.getElementById('adminLoginBtn');
     const logoutBtn=document.getElementById('logoutBtn');
+    const visitorBtn=document.getElementById('visitorLoginBtn');
     const userEmailSpan=document.getElementById('userEmail');
     const usersSection=document.getElementById('utilisateurs');
     if (user) {
-        currentUser=user;
+        currentUser=user; isVisitor=false;
         const adminEmails=["yves.cerisier@orange.fr","quinquin44@gmail.com","checheux@gmail.com"];
         isAdmin=adminEmails.includes(user.email); isSaisie=!isAdmin;
         if(userEmailSpan) userEmailSpan.innerHTML=isAdmin
             ?'<span style="background:#27ae60;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">👑 Admin</span>'
-            :`<span style="background:#3498db;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">✏️ ${user.email}</span>`;
+            :`<span style="background:#3498db;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">✏️ Vendeur</span>`;
         if(logoutBtn) logoutBtn.style.display='inline-block';
         if(adminLoginBtn) adminLoginBtn.style.display='none';
+        if(visitorBtn) visitorBtn.style.display='none';
         if(usersSection) usersSection.style.display=isAdmin?'block':'none';
         updateUsersTab();
-        document.body.classList.remove('readonly-mode');
-        if(!isAdmin) document.body.classList.add('saisie-mode');
+        document.body.classList.remove('readonly-mode','saisie-mode','visitor-mode');
+        if(isAdmin){ /* accès complet */ }
+        else { document.body.classList.add('saisie-mode'); changerSection('ventes'); }
+        startRealtimeSync();
+        if(isAdmin) chargerCodeVisiteur();
+    } else if(isVisitor) {
+        // Mode visiteur : lecture seule, tous onglets visibles
+        if(logoutBtn) logoutBtn.style.display='inline-block';
+        if(adminLoginBtn) adminLoginBtn.style.display='none';
+        if(visitorBtn) visitorBtn.style.display='none';
+        if(userEmailSpan) userEmailSpan.innerHTML='<span style="background:#17a2b8;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;">👁️ Visiteur</span>';
+        document.body.classList.add('readonly-mode');
+        document.body.classList.remove('saisie-mode');
+        if(usersSection) usersSection.style.display='none';
         startRealtimeSync();
     } else {
-        currentUser=null; isAdmin=false; isSaisie=false;
+        currentUser=null; isAdmin=false; isSaisie=false; isVisitor=false;
         document.body.classList.add('readonly-mode');
         document.body.classList.remove('saisie-mode');
         if(logoutBtn) logoutBtn.style.display='none';
         if(adminLoginBtn) adminLoginBtn.style.display='inline-block';
+        if(visitorBtn) visitorBtn.style.display='inline-block';
         if(userEmailSpan) userEmailSpan.innerHTML='';
         if(usersSection) usersSection.style.display='none';
         startRealtimeSync();
     }
+}
+
+// ===== CODE VISITEUR =====
+async function chargerCodeVisiteur() {
+    try {
+        const snap = await getDoc(doc(db,'barConfig','visiteurCode'));
+        if(snap.exists()) {
+            visitorCode = snap.data().code;
+            const el = document.getElementById('currentVisitorCode');
+            if(el) el.textContent = visitorCode;
+        } else {
+            // Générer un code initial si inexistant
+            await regenererCode();
+        }
+    } catch(e) { console.error('Erreur code visiteur:', e); }
+}
+async function regenererCode() {
+    if(!isAdmin) return;
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    try {
+        await setDoc(doc(db,'barConfig','visiteurCode'), { code, updatedAt: new Date().toISOString(), updatedBy: currentUser?.email||'admin' });
+        visitorCode = code;
+        const el = document.getElementById('currentVisitorCode');
+        if(el) el.textContent = code;
+        const msg = document.getElementById('visitorCodeMsg');
+        if(msg) { msg.textContent='✅ Nouveau code généré !'; setTimeout(()=>{ msg.textContent=''; }, 3000); }
+    } catch(e) { alert('❌ Erreur lors de la génération du code'); }
+}
+function ouvrirModalVisiteur() {
+    const m = document.getElementById('visitorModal');
+    if(m) { m.style.display='flex'; document.getElementById('visitorCodeInput').value=''; document.getElementById('visitorCodeMsg2').textContent=''; }
+}
+function fermerModalVisiteur() {
+    const m = document.getElementById('visitorModal');
+    if(m) m.style.display='none';
+}
+async function validerCodeVisiteur() {
+    const saisi = document.getElementById('visitorCodeInput').value.trim();
+    const msg = document.getElementById('visitorCodeMsg2');
+    if(!saisi || saisi.length !== 6) { msg.textContent='⚠️ Entrez un code à 6 chiffres'; return; }
+    msg.style.color='#888'; msg.textContent='⏳ Vérification...';
+    try {
+        const snap = await getDoc(doc(db,'barConfig','visiteurCode'));
+        const bon = snap.exists() ? snap.data().code : null;
+        if(saisi === bon) {
+            isVisitor = true;
+            fermerModalVisiteur();
+            updateUIForUser(null);
+        } else {
+            msg.style.color='#e74c3c'; msg.textContent='❌ Code incorrect. Contactez l'administrateur.';
+        }
+    } catch(e) { msg.style.color='#e74c3c'; msg.textContent='❌ Erreur de connexion'; }
 }
 
 // ===== INIT =====
@@ -1050,7 +1213,11 @@ function initialiser() {
 // Exposer tout en global
 Object.assign(window, {
     toggleLoginPanel, loginWithGoogle, loginWithEmail, addUser, removeUser,
-    doLogout: () => signOut(auth),
+    ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode,
+    sauvegarderBudget,
+    ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode,
+    sauvegarderBudget,
+    doLogout: () => { if(isVisitor){ isVisitor=false; isAdmin=false; isSaisie=false; updateUIForUser(null); } else { signOut(auth); } },
     sauvegarderDonnees, imprimerDonnees, exporterDonnees, importerDonnees,
     demanderReset, fermerModal, reinitialiserDonnees, changerSection,
     ajouterVente, supprimerVente, activerEditionVente, annulerEditionVente, sauvegarderModificationVente,
