@@ -1139,13 +1139,13 @@ async function updateUIForUser(user) {
                     // Utilisateur Firebase inconnu → déconnexion
                     await signOut(auth);
                     const msg=document.getElementById('loginPanelMsg');
-                    if(msg){msg.style.color='#e74c3c';msg.textContent='❌ Accès refusé. Contactez l'administrateur.';}
+                    if(msg){msg.style.color='#e74c3c';msg.textContent='❌ Accès refusé. Contactez l\'administrateur.';}
                     const panel=document.getElementById('loginPanel');
                     if(panel) panel.style.display='block';
                 }
             } catch(e) {
                 await signOut(auth);
-                alert('❌ Erreur de vérification d'accès. Réessayez.');
+                alert('❌ Erreur de vérification d\'accès. Réessayez.');
             }
         }
     } else if(isVisitor) {
