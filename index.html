@@ -69,10 +69,15 @@
         .stock-low { background: #fff3cd; border-color: #ffeaa7; }
         .stock-out { background: #f8d7da; border-color: #f5c6cb; }
         @media print { .no-print { display: none !important; } body { background: white !important; } .container { box-shadow: none !important; } }
-        .readonly-mode button:not(#adminLoginBtn):not(#logoutBtn):not(#visitorLoginBtn) { opacity:0.5; pointer-events:none; }
-        .readonly-mode input, .readonly-mode select { opacity:0.5; pointer-events:none; }
+        /* readonly : on bloque uniquement les boutons d'action de l'appli, pas la navigation ni la connexion */
+        .readonly-mode .section button { opacity:0.5; pointer-events:none; }
+        .readonly-mode .section input,
+        .readonly-mode .section select { opacity:0.5; pointer-events:none; }
+        /* Exceptions : les onglets restent cliquables en lecture seule */
+        .readonly-mode .tabs button { opacity:1 !important; pointer-events:auto !important; }
+        /* La top-bar (connexion, visiteur, déconnexion) reste toujours active */
+        .top-bar button, .top-bar input { pointer-events:auto !important; opacity:1 !important; }
         #loginPanel, #loginPanel * { pointer-events:auto !important; opacity:1 !important; }
-        #adminLoginBtn, #logoutBtn, #visitorLoginBtn { pointer-events:auto !important; opacity:1 !important; }
         /* Vendeur : seul l'onglet Ventes est accessible */
         .saisie-mode .tab:not([data-tab="ventes"]) { display:none !important; }
         /* Budget */
