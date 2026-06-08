@@ -27,7 +27,6 @@
         .tab { padding: 12px 16px; background: #667eea; border: none; border-radius: 8px; cursor: pointer; color: white; white-space: nowrap; flex-shrink: 0; font-size: 14px; }
         .tab.active { background: #2ecc71; }
         .section { display: none; }
-        .section.active { display: block; }
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 5px; font-weight: 600; }
         input, select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
@@ -155,7 +154,7 @@
         .nav-btn:hover { background:rgba(255,255,255,.22); }
         /* container style */
         .container { background:#f7f3ee !important; box-shadow:none !important; border-radius:0 !important; padding:0 !important; }
-        .section { background:#fff; border-radius:10px; margin:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+        .section { display:none; background:#fff; border-radius:10px; margin:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
         </style>
 </head>
 <body>
@@ -232,7 +231,7 @@
     </div>
 
     <!-- Section Ventes -->
-    <div id="ventes" class="section active">
+    <div id="ventes" class="section" style="display:none;">
         <h2>Enregistrer une vente</h2>
         <div class="form-group"><label>Produit</label><select id="venteBoisson"></select></div>
         <div class="form-group"><label>Quantité vendue</label><input type="number" id="venteQuantite" placeholder="Ex: 5" min="1"></div>
@@ -720,15 +719,22 @@ function afficherStock() {
 
 // ===== NAVIGATION =====
 function changerSection(sectionId) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
-    const tabs = document.querySelectorAll('.tab');
-    for (let t of tabs) { if (t.textContent.toLowerCase().includes(sectionId.toLowerCase())) { t.classList.add('active'); break; } }
-    const map = { stock: afficherStock, bilan: calculerBilan, ventes: afficherVentes, achats: afficherAchats,
-        boissons: afficherBoissons, apports: afficherApports, remboursements: afficherRemboursements, offertes: afficherOfferts,
-        utilisateurs: () => { if (isAdmin) loadUsersList(); } };
-    if (map[sectionId]) map[sectionId]();
+    // Cacher toutes les sections
+    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+    // Afficher uniquement la section demandée
+    const cible = document.getElementById(sectionId);
+    if(cible) cible.style.display = 'block';
+    // Sync le select nav
+    const sel = document.getElementById('navSelect');
+    if(sel && sel.value !== sectionId) sel.value = sectionId;
+    // Rafraîchir le contenu
+    const map = {
+        stock: afficherStock, bilan: calculerBilan, ventes: afficherVentes,
+        achats: afficherAchats, boissons: afficherBoissons, apports: afficherApports,
+        remboursements: afficherRemboursements, offertes: afficherOfferts,
+        utilisateurs: () => { if(isAdmin) loadUsersList(); }
+    };
+    if(map[sectionId]) map[sectionId]();
 }
 function updateUsersTab() {
     const opt = document.getElementById('usersNavOption');
@@ -1085,6 +1091,8 @@ function mettreAJourSelects() {
 function afficherToutesLesDonnees() {
     afficherApports(); afficherBoissons(); afficherAchats(); afficherVentes();
     afficherRemboursements(); afficherOfferts(); afficherStock(); calculerBilan(); mettreAJourIndicateursTri();
+    // Afficher la section ventes par défaut
+    changerSection('ventes');
 }
 
 // ===== AUTH =====
