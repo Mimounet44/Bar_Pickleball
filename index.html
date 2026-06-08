@@ -251,7 +251,7 @@
     </div>
 
     <!-- Section Consommations offertes -->
-    <div id="offertes" class="section">
+    <div id="offertes" class="section" style="display:none;">
         <h2>🎁 Consommations offertes</h2>
         <div class="form-group"><label>Produit offert</label><select id="offertBoisson"></select></div>
         <div class="form-group"><label>Quantité offerte</label><input type="number" id="offertQuantite" placeholder="Ex: 5" min="1"></div>
@@ -272,7 +272,7 @@
     </div>
 
     <!-- Section Stock -->
-    <div id="stock" class="section">
+    <div id="stock" class="section" style="display:none;">
         <h2>📦 État du Stock</h2>
         <div class="summary-grid">
             <div class="summary-card"><h3>Total Produits</h3><p id="totalBoissonsStock">0</p></div>
@@ -284,7 +284,7 @@
     </div>
 
     <!-- Section Achats -->
-    <div id="achats" class="section">
+    <div id="achats" class="section" style="display:none;">
         <h2>Enregistrer un achat</h2>
         <div class="form-group"><label>Produit</label><select id="achatBoisson"></select></div>
         <div class="form-group"><label>Quantité</label><input type="number" id="achatQuantite" placeholder="Ex: 24" min="1"></div>
@@ -305,7 +305,7 @@
     </div>
 
     <!-- Section Produits -->
-    <div id="boissons" class="section">
+    <div id="boissons" class="section" style="display:none;">
         <h2>📦 Gérer les produits</h2>
         <div class="form-group"><label>Nom du produit</label><input type="text" id="boissonNom" placeholder="Ex: Bière blonde, Galette saucisse, Bonbons"></div>
         <div class="form-group"><label>Type de produit</label>
@@ -338,7 +338,7 @@
     </div>
 
     <!-- Section Bilan -->
-    <div id="bilan" class="section">
+    <div id="bilan" class="section" style="display:none;">
         <h2>📊 Bilan financier</h2>
         <div class="summary-grid">
             <div class="summary-card"><h3>Total Apports</h3><p id="totalApportsBilan">0.00 €</p></div>
@@ -364,7 +364,7 @@
     </div>
 
     <!-- Section Apports -->
-    <div id="apports" class="section">
+    <div id="apports" class="section" style="display:none;">
         <h2>Enregistrer un apport</h2>
         <div class="form-group"><label>Nom du contributeur</label><input type="text" id="apportNom" placeholder="Ex: Jean Dupont"></div>
         <div class="form-group"><label>Montant (€)</label><input type="number" id="apportMontant" placeholder="Ex: 100" step="0.01"></div>
@@ -384,7 +384,7 @@
     </div>
 
     <!-- Section Remboursements -->
-    <div id="remboursements" class="section">
+    <div id="remboursements" class="section" style="display:none;">
         <h2>Rembourser un apport</h2>
         <div class="form-group"><label>Contributeur</label><select id="remboursementContributeur"></select></div>
         <div class="form-group"><label>Montant à rembourser (€)</label><input type="number" id="remboursementMontant" placeholder="Ex: 50" step="0.01"></div>
@@ -1078,8 +1078,6 @@ function mettreAJourSelects() {
 function afficherToutesLesDonnees() {
     afficherApports(); afficherBoissons(); afficherAchats(); afficherVentes();
     afficherRemboursements(); afficherOfferts(); afficherStock(); calculerBilan(); mettreAJourIndicateursTri();
-    // Afficher la section ventes par défaut
-    changerSection('ventes');
 }
 
 // ===== AUTH =====
@@ -1194,6 +1192,7 @@ async function updateUIForUser(user) {
             document.body.classList.remove('readonly-mode','saisie-mode');
             masquerLogin();
             afficherToutesLesDonnees(); mettreAJourSelects();
+            changerSection('ventes');
             startRealtimeSync();
             chargerCodeVisiteur();
         } else {
@@ -1238,6 +1237,7 @@ async function updateUIForUser(user) {
         document.body.classList.remove('saisie-mode');
         masquerLogin();
         afficherToutesLesDonnees(); mettreAJourSelects();
+        changerSection('ventes');
         startRealtimeSync();
 
     } else {
