@@ -1305,11 +1305,12 @@ function initialiser() {
     setInterval(() => { if (!isSaving && (isAdmin || isSaisie)) debounceSauvegarde(); }, 30000);
     // Afficher la page de connexion par défaut
     afficherLogin();
-    // Écouter les changements d'état Firebase Auth
-    onAuthStateChanged(auth, async (user) => {
-        await updateUIForUser(user);
-    });
 }
+
+// Brancher Firebase Auth à la racine du module (pas dans initialiser)
+onAuthStateChanged(auth, async (user) => {
+    await updateUIForUser(user);
+});
 
 // Exposer tout en global
 Object.assign(window, {
