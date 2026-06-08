@@ -1186,6 +1186,7 @@ async function updateUIForUser(user) {
             updateUsersTab();
             document.body.classList.remove('readonly-mode','saisie-mode');
             masquerLogin();
+            afficherToutesLesDonnees(); mettreAJourSelects();
             startRealtimeSync();
             chargerCodeVisiteur();
         } else {
@@ -1203,6 +1204,7 @@ async function updateUIForUser(user) {
                     document.body.classList.remove('readonly-mode');
                     document.body.classList.add('saisie-mode');
                     masquerLogin();
+                    afficherToutesLesDonnees(); mettreAJourSelects();
                     startRealtimeSync();
                     changerSection('ventes');
                 } else {
@@ -1228,19 +1230,19 @@ async function updateUIForUser(user) {
         document.body.classList.add('readonly-mode');
         document.body.classList.remove('saisie-mode');
         masquerLogin();
+        afficherToutesLesDonnees(); mettreAJourSelects();
         startRealtimeSync();
 
     } else {
-        // ── Déconnecté ─────────────────────────────────────────────────
+        // ── Déconnecté → retour page accueil ───────────────────────────
         currentUser = null; isAdmin = false; isSaisie = false; isVisitor = false;
         if(logoutBtn)    logoutBtn.style.display    = 'none';
         if(adminLoginBtn) adminLoginBtn.style.display = 'inline-block';
-        if(visitorBtn)   visitorBtn.style.display   = 'inline-block';
         if(userEmailSpan) userEmailSpan.innerHTML   = '';
         if(usersSection) usersSection.style.display = 'none';
         document.body.classList.add('readonly-mode');
         document.body.classList.remove('saisie-mode');
-        startRealtimeSync();
+        afficherLogin();
     }
 }
 
@@ -1299,22 +1301,21 @@ async function validerCodeVisiteur() {
 function initialiser() {
     const auj = getDateDuJour();
     ['apportDate','achatDate','venteDate','offertDate'].forEach(id => { const el=document.getElementById(id); if(el) el.value=auj; });
-    document.addEventListener('click', (e) => {
-        const panel=document.getElementById('loginPanel'); const btn=document.getElementById('adminLoginBtn');
-        if(panel && panel.style.display!=='none' && !panel.contains(e.target) && e.target!==btn) panel.style.display='none';
-    });
     window.addEventListener('beforeunload', () => { if (!isSaving) sauvegarderDonnees(); });
     setInterval(() => { if (!isSaving && (isAdmin || isSaisie)) debounceSauvegarde(); }, 30000);
-    document.body.classList.add('readonly-mode');
-    onAuthStateChanged(auth, (user) => updateUIForUser(user));
-    afficherToutesLesDonnees(); mettreAJourSelects();
+    // Afficher la page de connexion par défaut
+    afficherLogin();
+    // Écouter les changements d'état Firebase Auth
+    onAuthStateChanged(auth, async (user) => {
+        await updateUIForUser(user);
+    });
 }
 
 // Exposer tout en global
 Object.assign(window, {
     toggleLoginPanel, loginWithGoogle, loginWithEmail, addUser, removeUser,
     ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode,
-    doLogout: () => { if(isVisitor){ isVisitor=false; updateUIForUser(null); } else { signOut(auth); } },
+    doLogout: async () => { if(isVisitor){ isVisitor=false; await updateUIForUser(null); } else { await signOut(auth); } },
     sauvegarderDonnees, imprimerDonnees, exporterDonnees, importerDonnees,
     demanderReset, fermerModal, reinitialiserDonnees, changerSection,
     ajouterVente, supprimerVente, activerEditionVente, annulerEditionVente, sauvegarderModificationVente,
