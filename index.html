@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script>
+  if(!sessionStorage.getItem('_reloaded')){
+    sessionStorage.setItem('_reloaded','1');
+    location.reload(true);
+  }
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bar du Pickleball de Mauves</title>
