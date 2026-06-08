@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bar du Pickleball de Mauves</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 10px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f7f3ee; min-height: 100vh; padding: 10px; }
         .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); padding: 15px; }
         h1 { color: #667eea; text-align: center; margin-bottom: 15px; }
         h2 { margin-bottom: 15px; }
@@ -69,6 +70,38 @@
         .stock-low { background: #fff3cd; border-color: #ffeaa7; }
         .stock-out { background: #f8d7da; border-color: #f5c6cb; }
         @media print { .no-print { display: none !important; } body { background: white !important; } .container { box-shadow: none !important; } }
+        :root { --bar-ink2:#3d3020; --bar-ylw:#d4890a; --bar-grn:#1e8c45; --bar-grn2:#145e2e; --bar-bdr:#d4c9b5; --bar-s0:#fff; --bar-s1:#f0ebe2; --bar-muted:#7a6a50; }
+        /* LOGIN SCREEN */
+        #loginScreen { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px; background:#3d3020; position:fixed; inset:0; z-index:9999; }
+        .login-box { background:#fff; border-radius:16px; padding:32px; width:100%; max-width:400px; box-shadow:0 8px 40px rgba(0,0,0,.4); }
+        .login-brand { font-family:'Oswald',sans-serif; font-size:26px; letter-spacing:2px; color:#d4890a; text-align:center; margin-bottom:4px; }
+        .login-sub { text-align:center; font-size:13px; color:#7a6a50; margin-bottom:24px; }
+        .login-form { display:flex; flex-direction:column; gap:12px; }
+        .login-form label { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:#7a6a50; margin-bottom:4px; }
+        .login-form input { width:100%; padding:10px 13px; background:#f0ebe2; border:1.5px solid #d4c9b5; border-radius:8px; font-family:'Exo 2',sans-serif; font-size:14px; color:#1a1410; outline:none; box-sizing:border-box; }
+        .login-form input:focus { border-color:#1e8c45; }
+        .btn-login-main { width:100%; padding:12px; border:none; border-radius:8px; background:#1e8c45; color:#fff; font-family:'Oswald',sans-serif; font-size:16px; letter-spacing:.8px; cursor:pointer; text-transform:uppercase; transition:background .15s; }
+        .btn-login-main:hover { background:#145e2e; }
+        .btn-google-bar { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:10px; background:#f0ebe2; border:1.5px solid #d4c9b5; border-radius:8px; font-family:'Exo 2',sans-serif; font-size:14px; font-weight:600; color:#1a1410; cursor:pointer; transition:background .15s; }
+        .btn-google-bar:hover { background:#e8e1d5; }
+        .login-divider { text-align:center; font-size:12px; color:#b0a090; position:relative; margin:2px 0; }
+        .login-divider::before, .login-divider::after { content:''; position:absolute; top:50%; width:42%; height:1px; background:#d4c9b5; }
+        .login-divider::before { left:0; } .login-divider::after { right:0; }
+        .btn-visitor-login { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px; border-radius:8px; border:1.5px solid #4a7090; background:linear-gradient(135deg,#1a2a40,#2a3d56); color:#7adcff; font-family:'Oswald',sans-serif; font-size:14px; letter-spacing:.6px; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+        .btn-visitor-login:hover { border-color:#7adcff; }
+        #loginMsg { text-align:center; font-size:13px; min-height:18px; margin-bottom:10px; color:#e74c3c; }
+        /* NAV BAR */
+        .nav-bar { background:#3d3020; color:#fff; padding:0 16px; height:54px; display:none; align-items:center; gap:12px; position:sticky; top:0; z-index:200; box-shadow:0 3px 16px rgba(0,0,0,.3); }
+        .nav-brand { font-family:'Oswald',sans-serif; font-size:20px; letter-spacing:2px; color:#ffd080; flex-shrink:0; }
+        .nav-select-wrap { flex:1; max-width:260px; }
+        .nav-select { width:100%; padding:7px 30px 7px 12px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; color:#fff; font-family:'Exo 2',sans-serif; font-size:14px; font-weight:600; cursor:pointer; outline:none; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ffffff' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
+        .nav-select option { background:#3d3020; color:#fff; }
+        .nav-user { font-size:12px; color:rgba(255,255,255,.65); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
+        .nav-r { margin-left:auto; display:flex; gap:8px; align-items:center; }
+        .nav-btn { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); color:#fff; padding:5px 12px; border-radius:6px; cursor:pointer; font-family:'Exo 2',sans-serif; font-size:12px; font-weight:600; transition:background .15s; white-space:nowrap; }
+        .nav-btn:hover { background:rgba(255,255,255,.22); }
+        /* Vendeur : cacher les options non-ventes dans le select */
+        .saisie-mode .nav-select option:not([value="ventes"]) { display:none !important; }
         /* readonly : on bloque uniquement les boutons d'action de l'appli, pas la navigation ni la connexion */
         .readonly-mode .section button { opacity:0.5; pointer-events:none; }
         .readonly-mode .section input,
@@ -80,21 +113,96 @@
         #loginPanel, #loginPanel * { pointer-events:auto !important; opacity:1 !important; }
         .modal, .modal * { pointer-events:auto !important; opacity:1 !important; }
         /* Vendeur : seul l'onglet Ventes est accessible */
-        .saisie-mode .tab:not([data-tab="ventes"]) { display:none !important; }
+        .saisie-mode .nav-select option:not([value="ventes"]) { display:none !important; }
         /* Budget */
-        .budget-card { background:linear-gradient(135deg,#1abc9c,#16a085); color:white; border-radius:10px; padding:18px; margin-bottom:16px; }
-        .budget-card h3 { font-size:14px; opacity:.85; margin-bottom:6px; }
-        .budget-bar-bg { background:rgba(255,255,255,.25); border-radius:20px; height:14px; margin:8px 0; overflow:hidden; }
-        .budget-bar-fill { height:100%; border-radius:20px; background:white; transition:width .4s; }
-        .budget-bar-fill.warn { background:#f39c12; }
-        .budget-bar-fill.danger { background:#e74c3c; }
-    </style>
+
+
+        /* LOGIN SCREEN */
+        #loginScreen { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px; background:#3d3020; position:fixed; inset:0; z-index:9999; }
+        .login-box { background:#fff; border-radius:16px; padding:32px; width:100%; max-width:400px; box-shadow:0 8px 40px rgba(0,0,0,.4); }
+        .login-brand { font-family:'Oswald',sans-serif; font-size:26px; letter-spacing:2px; color:#d4890a; text-align:center; margin-bottom:4px; }
+        .login-sub { text-align:center; font-size:13px; color:#7a6a50; margin-bottom:24px; }
+        .login-form { display:flex; flex-direction:column; gap:12px; }
+        .login-form label { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:#7a6a50; margin-bottom:4px; }
+        .login-form input { width:100%; padding:10px 13px; background:#f0ebe2; border:1.5px solid #d4c9b5; border-radius:8px; font-family:'Exo 2',sans-serif; font-size:14px; color:#1a1410; outline:none; box-sizing:border-box; }
+        .login-form input:focus { border-color:#1e8c45; }
+        .btn-login-main { width:100%; padding:12px; border:none; border-radius:8px; background:#1e8c45; color:#fff; font-family:'Oswald',sans-serif; font-size:16px; letter-spacing:.8px; cursor:pointer; text-transform:uppercase; transition:background .15s; }
+        .btn-login-main:hover { background:#145e2e; }
+        .btn-google-bar { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:10px; background:#f0ebe2; border:1.5px solid #d4c9b5; border-radius:8px; font-family:'Exo 2',sans-serif; font-size:14px; font-weight:600; color:#1a1410; cursor:pointer; transition:background .15s; }
+        .btn-google-bar:hover { background:#e8e1d5; }
+        .login-divider { text-align:center; font-size:12px; color:#b0a090; position:relative; margin:2px 0; }
+        .login-divider::before, .login-divider::after { content:''; position:absolute; top:50%; width:42%; height:1px; background:#d4c9b5; }
+        .login-divider::before { left:0; } .login-divider::after { right:0; }
+        .btn-visitor-login { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px; border-radius:8px; border:1.5px solid #4a7090; background:linear-gradient(135deg,#1a2a40,#2a3d56); color:#7adcff; font-family:'Oswald',sans-serif; font-size:14px; letter-spacing:.6px; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+        .btn-visitor-login:hover { border-color:#7adcff; }
+        #loginMsg { text-align:center; font-size:13px; min-height:18px; margin-bottom:10px; }
+        /* NAV BAR */
+        .nav-bar { background:#3d3020; color:#fff; padding:0 16px; height:54px; align-items:center; gap:12px; position:sticky; top:0; z-index:200; box-shadow:0 3px 16px rgba(0,0,0,.3); }
+        .nav-brand { font-family:'Oswald',sans-serif; font-size:20px; letter-spacing:2px; color:#ffd080; flex-shrink:0; }
+        .nav-select-wrap { flex:1; max-width:260px; }
+        .nav-select { width:100%; padding:7px 30px 7px 12px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); border-radius:8px; color:#fff; font-family:'Exo 2',sans-serif; font-size:14px; font-weight:600; cursor:pointer; outline:none; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath fill='%23fff' d='M5 7L0 0h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
+        .nav-select option { background:#3d3020; color:#fff; }
+        .nav-user { font-size:12px; color:rgba(255,255,255,.65); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
+        .nav-r { margin-left:auto; display:flex; gap:8px; align-items:center; }
+        .nav-btn { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); color:#fff; padding:5px 12px; border-radius:6px; cursor:pointer; font-family:'Exo 2',sans-serif; font-size:12px; font-weight:600; transition:background .15s; white-space:nowrap; }
+        .nav-btn:hover { background:rgba(255,255,255,.22); }
+        /* container style */
+        .container { background:#f7f3ee !important; box-shadow:none !important; border-radius:0 !important; padding:0 !important; }
+        .section { background:#fff; border-radius:10px; margin:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+        </style>
 </head>
 <body>
-<div class="container">
-    <h1>🍺 Bar du Pickleball de Mauves</h1>
+<!-- Écran de connexion style Tournoi Pickleball -->
+<div id="loginScreen">
+    <div class="login-box">
+        <div class="login-brand">🍺 Bar Pickleball</div>
+        <div class="login-sub">Gestion de la buvette RSTH</div>
+        <div id="loginMsg"></div>
+        <div class="login-form">
+            <div>
+                <label>Email</label>
+                <input type="email" id="emailInput" placeholder="votre@email.com" onkeydown="if(event.key==='Enter') loginWithEmail()">
+            </div>
+            <div>
+                <label>Mot de passe</label>
+                <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') loginWithEmail()">
+            </div>
+            <button class="btn-login-main" onclick="loginWithEmail()">→ Se connecter</button>
+            <div class="login-divider">ou</div>
+            <button class="btn-google-bar" onclick="loginWithGoogle()">
+                <i class="fab fa-google" style="color:#4285f4;font-size:16px;"></i> Connexion Google
+            </button>
+            <div class="login-divider">ou</div>
+            <button class="btn-visitor-login" onclick="ouvrirModalVisiteur()">👁️ Accès Visiteur</button>
+        </div>
+    </div>
+</div>
 
-    <div class="top-bar no-print">
+<!-- Nav Bar style Tournoi -->
+<div class="nav-bar no-print" id="navBar">
+    <div class="nav-brand">🍺 Bar Pickleball</div>
+    <div class="nav-select-wrap">
+        <select class="nav-select" id="navSelect" onchange="changerSection(this.value)">
+            <option value="ventes">🛒 Ventes</option>
+            <option value="offertes">🎁 Offertes</option>
+            <option value="stock">📦 Stock</option>
+            <option value="achats">🛍️ Achats</option>
+            <option value="boissons">🍺 Produits</option>
+            <option value="bilan">📊 Bilan</option>
+            <option value="apports">💰 Apports</option>
+            <option value="remboursements">💸 Remboursements</option>
+            <option value="utilisateurs" id="usersNavOption" style="display:none;">👥 Utilisateurs</option>
+        </select>
+    </div>
+    <span class="nav-user" id="userEmail"></span>
+    <div class="nav-r">
+        <button id="adminLoginBtn" class="nav-btn" onclick="afficherLogin()">🔐 Connexion</button>
+        <button id="logoutBtn" class="nav-btn" onclick="doLogout()" style="display:none;">🚪 Déco</button>
+    </div>
+</div>
+
+<div class="container" style="display:none;">
+    <div class="top-bar no-print" style="display:none;">
         <button class="btn-small btn-success" onclick="sauvegarderDonnees()"><i class="fas fa-save"></i> Sauvegarder</button>
         <button class="btn-small btn-print" onclick="imprimerDonnees()"><i class="fas fa-print"></i> Imprimer</button>
         <button class="btn-small btn-info" onclick="exporterDonnees()"><i class="fas fa-file-export"></i> Exporter</button>
@@ -102,33 +210,7 @@
         <button class="btn-small btn-danger" onclick="demanderReset()"><i class="fas fa-redo"></i> Réinitialiser</button>
         <span id="saveStatus" class="save-status">✓ Sauvegardé</span>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importerDonnees(event)">
-        <span id="userEmail"></span>
-        <button id="adminLoginBtn" onclick="toggleLoginPanel()" style="background:transparent;border:1px solid #dee2e6;color:#888;font-size:12px;padding:6px 12px;border-radius:15px;cursor:pointer;">🔑 Connexion</button>
-        <div id="loginPanel" style="display:none;position:fixed;top:70px;right:12px;z-index:9999;background:#fff;border:1px solid #dee2e6;border-radius:12px;padding:18px;width:270px;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
-            <div style="font-weight:700;margin-bottom:12px;font-size:15px;">🔑 Connexion</div>
-            <button onclick="loginWithGoogle()" style="width:100%;padding:9px;margin-bottom:10px;border-radius:8px;border:1px solid #dee2e6;background:#f8f9fa;color:#333;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
-                <img src="https://www.google.com/favicon.ico" style="width:14px;"> Connexion Google
-            </button>
-            <div style="text-align:center;color:#888;font-size:12px;margin-bottom:10px;">— ou email / mot de passe —</div>
-            <input id="loginEmail" type="email" placeholder="Email" style="width:100%;padding:8px;border-radius:8px;border:1px solid #dee2e6;font-size:13px;margin-bottom:8px;box-sizing:border-box;">
-            <input id="loginPassword" type="password" placeholder="Mot de passe" style="width:100%;padding:8px;border-radius:8px;border:1px solid #dee2e6;font-size:13px;margin-bottom:10px;box-sizing:border-box;">
-            <button onclick="loginWithEmail()" style="width:100%;padding:9px;border-radius:8px;border:none;background:#667eea;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">Se connecter</button>
-            <div id="loginPanelMsg" style="margin-top:8px;font-size:12px;color:#e74c3c;text-align:center;min-height:16px;"></div>
-        </div>
-        <button id="logoutBtn" onclick="doLogout()" style="display:none;background:transparent;border:1px solid #dee2e6;color:#888;font-size:12px;padding:6px 12px;border-radius:15px;cursor:pointer;">🚪 Déconnexion</button>
-        <button id="visitorLoginBtn" onclick="ouvrirModalVisiteur()" style="background:transparent;border:1px solid #17a2b8;color:#17a2b8;font-size:12px;padding:6px 12px;border-radius:15px;cursor:pointer;">👁️ Visiteur</button>
-    </div>
-
-    <div class="tabs no-print">
-        <button class="tab" data-tab="ventes" onclick="changerSection('ventes')">🛒 Ventes</button>
-        <button class="tab" data-tab="offertes" onclick="changerSection('offertes')">🎁 Offertes</button>
-        <button class="tab" data-tab="stock" onclick="changerSection('stock')">📦 Stock</button>
-        <button class="tab" data-tab="achats" onclick="changerSection('achats')">🛍️ Achats</button>
-        <button class="tab" data-tab="boissons" onclick="changerSection('boissons')">🍺 Produits</button>
-        <button class="tab" data-tab="bilan" onclick="changerSection('bilan')">📊 Bilan</button>
-        <button class="tab" data-tab="apports" onclick="changerSection('apports')">💰 Apports</button>
-        <button class="tab" data-tab="remboursements" onclick="changerSection('remboursements')">💸 Remboursements</button>
-        <button class="tab" data-tab="utilisateurs" onclick="changerSection('utilisateurs')" id="usersTabBtn" style="display:none;">👥 Utilisateurs</button>
+        <span id="loginPanelMsg" style="font-size:12px;color:#e74c3c;"></span>
     </div>
 
     <!-- Section Ventes -->
@@ -241,12 +323,7 @@
     <!-- Section Bilan -->
     <div id="bilan" class="section">
         <h2>📊 Bilan financier</h2>
-        <div class="budget-card">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-                <div>
-                    <h3>🛒 Budget réapprovisionnement</h3>
-                    <div style="font-size:26px;font-weight:700;" id="budgetSolde">— €</div>
-                    <div style="font-size:12px;opacity:.8;">restants sur <span id="budgetTotal">60</span> €</div>
+<div style="font-size:12px;opacity:.8;">restants sur <span id="budgetTotal">60</span> €</div>
                 </div>
                 <div id="budgetAdminCtrl" style="display:none;text-align:right;">
                     <div style="font-size:11px;opacity:.75;margin-bottom:4px;">Modifier le budget</div>
@@ -398,7 +475,7 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 let isAdmin = false, isSaisie = false, isVisitor = false, currentUser = null, secondaryApp = null, unsubscribeSnapshot = null;
-let data = { apports: [], boissons: [], achats: [], ventes: [], remboursements: [], offerts: [], budgetReappro: 60 };
+let data = { apports: [], boissons: [], achats: [], ventes: [], remboursements: [], offerts: [] };
 let visitorCode = null;
 let saveTimeout, isSaving = false;
 let triApports = 'desc', triAchats = 'desc', triVentes = 'desc', triRemboursements = 'desc', triOfferts = 'desc';
@@ -636,10 +713,8 @@ function changerSection(sectionId) {
     if (map[sectionId]) map[sectionId]();
 }
 function updateUsersTab() {
-    const btn = document.getElementById('usersTabBtn');
-    const section = document.getElementById('utilisateurs');
-    if (btn) btn.style.display = isAdmin ? 'inline-block' : 'none';
-    if (section) section.style.display = isAdmin ? '' : 'none';
+    const opt = document.getElementById('usersNavOption');
+    if(opt) opt.style.display = isAdmin ? '' : 'none';
 }
 
 // ===== VENTES =====
@@ -967,34 +1042,8 @@ function calculerBilan() {
     vel.textContent = verificationOK ? '✓ OK' : '❌ Erreur';
     vel.style.color = verificationOK ? '#27ae60' : '#e74c3c';
     afficherDetailsContributeurs();
-    mettreAJourBudget();
 }
-function mettreAJourBudget() {
-    const budget = data.budgetReappro || 60;
-    const depenses = data.achats.reduce((s,a) => s+a.total, 0);
-    const restant = budget - depenses;
-    const pct = Math.max(0, Math.min(100, (restant/budget)*100));
-    const g = id => document.getElementById(id);
-    if(!g('budgetSolde')) return;
-    g('budgetSolde').textContent = restant.toFixed(2)+' €';
-    g('budgetTotal').textContent = budget.toFixed(2);
-    const fill = g('budgetBarFill');
-    fill.style.width = pct+'%';
-    fill.className = 'budget-bar-fill'+(pct<20?' danger':pct<50?' warn':'');
-    const nb = data.achats.length;
-    g('budgetAchatsInfo').textContent = nb===0
-        ? 'Aucun achat — budget intact'
-        : nb+' achat'+(nb>1?'s':'')+' — '+depenses.toFixed(2)+' EUR depenses sur '+budget.toFixed(2)+' EUR';
-    if(g('budgetInput')) g('budgetInput').value = budget;
-    if(g('budgetAdminCtrl')) g('budgetAdminCtrl').style.display = isAdmin ? 'block' : 'none';
-}
-function sauvegarderBudget() {
-    const val = parseFloat(document.getElementById('budgetInput').value);
-    if(isNaN(val)||val<0){ alert('Montant invalide'); return; }
-    data.budgetReappro = val;
-    debounceSauvegarde();
-    mettreAJourBudget();
-}
+
 function afficherDetailsContributeurs() {
     const tbody = document.getElementById('tbodyContributeurs'); tbody.innerHTML = '';
     const contributeurs = {};
@@ -1021,28 +1070,48 @@ function afficherToutesLesDonnees() {
 }
 
 // ===== AUTH =====
-function toggleLoginPanel() {
-    const p = document.getElementById('loginPanel');
-    if (p) p.style.display = p.style.display==='none' ? 'block' : 'none';
+function toggleLoginPanel() {}
+function afficherLogin() {
+    const ls = document.getElementById('loginScreen');
+    const nb = document.getElementById('navBar');
+    const ct = document.querySelector('.container');
+    if(ls) ls.style.display = 'flex';
+    if(nb) nb.style.display = 'none';
+    if(ct) ct.style.display = 'none';
+    const msg = document.getElementById('loginMsg');
+    if(msg) msg.textContent = '';
+}
+function masquerLogin() {
+    const ls = document.getElementById('loginScreen');
+    const nb = document.getElementById('navBar');
+    const ct = document.querySelector('.container');
+    if(ls) ls.style.display = 'none';
+    if(nb) nb.style.display = 'flex';
+    if(ct) ct.style.display = 'block';
+}
+function showLogin() { afficherLogin(); }
+function showAuthMsg(msg, color) {
+    const el = document.getElementById('loginMsg');
+    if(el){ el.textContent = msg; el.style.color = color === 'red' ? '#c0281a' : '#1e8c45'; }
 }
 async function loginWithGoogle() {
-    try { await signInWithPopup(auth, provider); document.getElementById('loginPanel').style.display='none'; }
+    try { await signInWithPopup(auth, provider); masquerLogin(); }
     catch(e) {
-        const m = document.getElementById('loginPanelMsg');
+        const m = document.getElementById('loginMsg');
         if(m) m.textContent = e.code==='auth/unauthorized-domain' ? '⚠️ Domaine non autorisé' : e.code==='auth/popup-closed-by-user' ? '⚠️ Connexion annulée' : '❌ '+e.message;
     }
 }
 async function loginWithEmail() {
-    const email = document.getElementById('loginEmail')?.value?.trim();
-    const password = document.getElementById('loginPassword')?.value;
-    const msg = document.getElementById('loginPanelMsg');
-    if (!email || !password) { if(msg) msg.textContent='⚠️ Email et mot de passe requis'; return; }
+    const email = (document.getElementById('emailInput')?.value || document.getElementById('loginEmail')?.value || '').trim();
+    const password = document.getElementById('passwordInput')?.value || document.getElementById('loginPassword')?.value || '';
+    const msg = document.getElementById('loginMsg');
+    if (!email || !password) { if(msg){ msg.style.color='#c0281a'; msg.textContent='Email et mot de passe requis'; } return; }
     try {
-        if(msg) { msg.style.color='#888'; msg.textContent='⏳ Connexion...'; }
+        if(msg){ msg.style.color='#888'; msg.textContent='Connexion...'; }
         await signInWithEmailAndPassword(auth, email, password);
-        document.getElementById('loginPanel').style.display='none';
+        masquerLogin();
     } catch(e) {
-        if(msg) { msg.style.color='#e74c3c'; msg.textContent=(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')?'❌ Mot de passe incorrect':e.code==='auth/user-not-found'?'❌ Email inconnu':'❌ '+e.message; }
+        if(msg){ msg.style.color='#c0281a'; msg.textContent=(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')?'Mot de passe incorrect':e.code==='auth/user-not-found'?'Email inconnu':'Erreur: '+e.code; }
     }
 }
 function getSecondaryApp() {
@@ -1110,6 +1179,7 @@ async function updateUIForUser(user) {
             if(usersSection) usersSection.style.display = 'block';
             updateUsersTab();
             document.body.classList.remove('readonly-mode','saisie-mode');
+            masquerLogin();
             startRealtimeSync();
             chargerCodeVisiteur();
         } else {
@@ -1126,15 +1196,14 @@ async function updateUIForUser(user) {
                     updateUsersTab();
                     document.body.classList.remove('readonly-mode');
                     document.body.classList.add('saisie-mode');
+                    masquerLogin();
                     startRealtimeSync();
                     changerSection('ventes');
                 } else {
                     // Non autorisé : déconnexion immédiate
                     await signOut(auth);
-                    const msg = document.getElementById('loginPanelMsg');
-                    if(msg){ msg.style.color='#e74c3c'; msg.textContent='Acces refuse. Contactez l administrateur.'; }
-                    const panel = document.getElementById('loginPanel');
-                    if(panel) panel.style.display = 'block';
+                    showAuthMsg('Acces refuse. Contactez l administrateur.', 'red');
+                    afficherLogin();
                 }
             } catch(e) {
                 await signOut(auth);
@@ -1152,6 +1221,7 @@ async function updateUIForUser(user) {
         if(usersSection) usersSection.style.display = 'none';
         document.body.classList.add('readonly-mode');
         document.body.classList.remove('saisie-mode');
+        masquerLogin();
         startRealtimeSync();
 
     } else {
@@ -1237,7 +1307,7 @@ function initialiser() {
 // Exposer tout en global
 Object.assign(window, {
     toggleLoginPanel, loginWithGoogle, loginWithEmail, addUser, removeUser,
-    ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode, sauvegarderBudget,
+    ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode,
     doLogout: () => { if(isVisitor){ isVisitor=false; updateUIForUser(null); } else { signOut(auth); } },
     sauvegarderDonnees, imprimerDonnees, exporterDonnees, importerDonnees,
     demanderReset, fermerModal, reinitialiserDonnees, changerSection,
