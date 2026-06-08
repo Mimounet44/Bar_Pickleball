@@ -70,6 +70,7 @@
         .edit-input { width: 100%; padding: 8px; border: 2px solid #f39c12; border-radius: 4px; font-size: 16px; }
         .edit-date { width: 100%; padding: 6px; border: 2px solid #f39c12; border-radius: 4px; font-size: 16px; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        #visitorModal { z-index: 10000 !important; }
         .modal-content { background: white; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%; text-align: center; }
         .modal-buttons { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
         .stock-card { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 10px; }
@@ -179,7 +180,18 @@
                 <i class="fab fa-google" style="color:#4285f4;font-size:16px;"></i> Connexion Google
             </button>
             <div class="login-divider">ou</div>
-            <button class="btn-visitor-login" onclick="ouvrirModalVisiteur()">👁️ Accès Visiteur</button>
+            <!-- Formulaire visiteur inline dans le loginScreen -->
+            <div id="visitorForm" style="display:none;flex-direction:column;gap:8px;">
+                <input type="text" id="visitorCodeInput" placeholder="Code 6 chiffres" maxlength="6"
+                    style="width:100%;padding:12px;border:2px solid #4a7090;border-radius:8px;font-size:22px;text-align:center;letter-spacing:6px;font-weight:700;background:#1a2a40;color:#7adcff;outline:none;box-sizing:border-box;"
+                    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                <div id="visitorCodeMsg2" style="font-size:13px;color:#e74c3c;min-height:16px;text-align:center;"></div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-visitor-login" style="flex:1;" onclick="validerCodeVisiteur()">👁️ Accéder</button>
+                    <button onclick="cacherFormVisiteur()" style="padding:10px 16px;border-radius:8px;border:1px solid #888;background:transparent;color:#888;cursor:pointer;font-size:13px;">✕</button>
+                </div>
+            </div>
+            <button class="btn-visitor-login" id="btnVisitorOpen" onclick="afficherFormVisiteur()">👁️ Accès Visiteur</button>
         </div>
     </div>
 </div>
@@ -433,7 +445,7 @@
 </div>
 
 <!-- Modal Visiteur -->
-<div id="visitorModal" class="modal no-print">
+<div id="visitorModal" class="modal no-print" style="z-index:10000;">
     <div class="modal-content" style="max-width:320px;">
         <h3>👁️ Accès Visiteur</h3>
         <p style="color:#888;font-size:13px;margin:10px 0 16px;">Entrez le code fourni par l'administrateur.</p>
@@ -1271,14 +1283,25 @@ async function regenererCode() {
         if(msg){ msg.textContent = 'Nouveau code genere !'; setTimeout(()=>{ msg.textContent=''; }, 3000); }
     } catch(e) { alert('Erreur generation code'); }
 }
-function ouvrirModalVisiteur() {
-    const m = document.getElementById('visitorModal');
-    if(m){ m.style.display='flex'; document.getElementById('visitorCodeInput').value=''; document.getElementById('visitorCodeMsg2').textContent=''; }
+function afficherFormVisiteur() {
+    const f = document.getElementById('visitorForm');
+    const b = document.getElementById('btnVisitorOpen');
+    if(f){ f.style.display='flex'; }
+    if(b){ b.style.display='none'; }
+    const inp = document.getElementById('visitorCodeInput');
+    if(inp){ inp.value=''; inp.focus(); }
+    const msg = document.getElementById('visitorCodeMsg2');
+    if(msg) msg.textContent='';
 }
-function fermerModalVisiteur() {
-    const m = document.getElementById('visitorModal');
-    if(m) m.style.display = 'none';
+function cacherFormVisiteur() {
+    const f = document.getElementById('visitorForm');
+    const b = document.getElementById('btnVisitorOpen');
+    if(f){ f.style.display='none'; }
+    if(b){ b.style.display='flex'; }
 }
+// Legacy (modal visiteur externe - gardé pour compat)
+function ouvrirModalVisiteur() { afficherFormVisiteur(); }
+function fermerModalVisiteur() { cacherFormVisiteur(); }
 async function validerCodeVisiteur() {
     const saisi = document.getElementById('visitorCodeInput').value.trim();
     const msg   = document.getElementById('visitorCodeMsg2');
@@ -1315,7 +1338,7 @@ onAuthStateChanged(auth, async (user) => {
 // Exposer tout en global
 Object.assign(window, {
     toggleLoginPanel, loginWithGoogle, loginWithEmail, addUser, removeUser,
-    ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode,
+    ouvrirModalVisiteur, fermerModalVisiteur, validerCodeVisiteur, regenererCode, afficherFormVisiteur, cacherFormVisiteur,
     doLogout: async () => { if(isVisitor){ isVisitor=false; await updateUIForUser(null); } else { await signOut(auth); } },
     sauvegarderDonnees, imprimerDonnees, exporterDonnees, importerDonnees,
     demanderReset, fermerModal, reinitialiserDonnees, changerSection,
