@@ -180,15 +180,19 @@
             </button>
             <div class="login-divider">ou</div>
             <!-- Formulaire visiteur inline dans le loginScreen -->
-            <div id="visitorForm" style="display:none;flex-direction:column;gap:8px;">
-                <input type="text" id="visitorCodeInput" placeholder="Code 6 chiffres" maxlength="6"
-                    style="width:100%;padding:12px;border:2px solid #4a7090;border-radius:8px;font-size:22px;text-align:center;letter-spacing:6px;font-weight:700;background:#1a2a40;color:#7adcff;outline:none;box-sizing:border-box;"
+            <div id="visitorForm" style="display:none;flex-direction:column;gap:10px;">
+                <input type="text" id="visitorCodeInput" placeholder="• • • • • •" maxlength="6"
+                    style="width:100%;padding:14px;border:2px solid #4a7090;border-radius:10px;font-size:28px;text-align:center;letter-spacing:10px;font-weight:700;background:#1a2a40;color:#7adcff;outline:none;box-sizing:border-box;"
                     oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                 <div id="visitorCodeMsg2" style="font-size:13px;color:#e74c3c;min-height:16px;text-align:center;"></div>
-                <div style="display:flex;gap:8px;">
-                    <button class="btn-visitor-login" style="flex:1;" onclick="validerCodeVisiteur()">👁️ Accéder</button>
-                    <button onclick="cacherFormVisiteur()" style="padding:10px 16px;border-radius:8px;border:1px solid #888;background:transparent;color:#888;cursor:pointer;font-size:13px;">✕</button>
-                </div>
+                <button onclick="validerCodeVisiteur()"
+                    style="width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,#1a2a40,#2a3d56);border:1.5px solid #4a7090;color:#7adcff;font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .2s;">
+                    👁️ Accéder
+                </button>
+                <button onclick="cacherFormVisiteur()"
+                    style="width:100%;padding:11px;border:1.5px solid #b0a090;border-radius:10px;background:transparent;color:#b0a090;font-family:'Exo 2',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;">
+                    ✕ Annuler
+                </button>
             </div>
             <button class="btn-visitor-login" id="btnVisitorOpen" onclick="afficherFormVisiteur()">👁️ Accès Visiteur</button>
         </div>
