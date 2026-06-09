@@ -706,6 +706,8 @@ function afficherStock() {
 
 // ===== NAVIGATION =====
 function changerSection(sectionId) {
+    // Bloquer l'accès à utilisateurs pour les visiteurs
+    if(sectionId === 'utilisateurs' && !isAdmin) return;
     // Cacher toutes les sections
     document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
     // Afficher uniquement la section demandée
@@ -1233,6 +1235,8 @@ async function updateUIForUser(user) {
         if(adminLoginBtn) adminLoginBtn.style.display = 'none';
         if(visitorBtn)   visitorBtn.style.display   = 'none';
         if(usersSection) usersSection.style.display = 'none';
+        const usersOpt = document.getElementById('usersNavOption');
+        if(usersOpt) usersOpt.style.display = 'none';
         document.body.classList.add('readonly-mode');
         document.body.classList.remove('saisie-mode');
         masquerLogin();
